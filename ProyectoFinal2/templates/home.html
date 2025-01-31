@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Bienvenido al Sistema</h1>
+
+    {% if user.is_authenticated %}
+        <p>Hola, {{ user.username }}!</p>
+        {% if user.es_cliente %}
+            <a href="{% url 'vista_cliente' %}">Ir al Panel de Cliente</a>
+        {% elif user.es_empleado %}
+            <a href="{% url 'vista_empleado' %}">Ir al Panel de Empleado</a>
+        {% elif user.es_admin %}
+            <a href="{% url 'vista_admin' %}">Ir al Panel de Administrador</a>
+        {% endif %}
+        <br>
+
+        <!-- ✅ Logout con formulario POST -->
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">Cerrar sesión</button>
+        </form>
+
+    {% else %}
+        <a href="{% url 'login' %}">Iniciar sesión</a>
+    {% endif %}
+</body>
+</html>

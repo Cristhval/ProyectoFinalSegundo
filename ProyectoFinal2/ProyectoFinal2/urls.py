@@ -16,7 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
+from util import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.vista_publica, name='public_home'),  # Página pública
+    path('home/', views.home, name='home'),  # Redirigir usuarios autenticados
+
+    # Vistas para diferentes usuarios
+    path('cliente/', views.vista_cliente, name='vista_cliente'),
+    path('empleado/', views.vista_empleado, name='vista_empleado'),
+    path('admin-dashboard/', views.vista_admin, name='vista_admin'),
+
+    # Login y Logout
+    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

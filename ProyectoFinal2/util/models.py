@@ -1,6 +1,6 @@
 from django.db import models
 from enum import Enum
-
+from django.contrib.auth.models import AbstractUser
 
 # Enumerador para roles de personal
 class Rol(Enum):
@@ -8,7 +8,6 @@ class Rol(Enum):
     SECRETARIO = "SECRETARIO"
     ADMINISTRADOR = "ADMINISTRADOR"
     COCINERO = "COCINERO"
-
 
 # Modelo base para Persona
 class Persona(models.Model):
@@ -46,7 +45,6 @@ class Persona(models.Model):
         if direccion:
             self.direccion = direccion
         self.save()
-
 
 # Modelo Cliente
 class Cliente(Persona):
@@ -153,6 +151,32 @@ class Administrador(Empleado):
     def crear_reporte(self):
         pass
 
+# Modelo UsuarioPersonalizado para autenticación
+class UsuarioPersonalizado(AbstractUser):
+    class TipoUsuario(models.TextChoices):
+        CLIENTE = "Cliente"
+        EMPLEADO = "Empleado"
+        ADMINISTRADOR = "Administrador"
+
+    tipo_usuario = models.CharField(
+        max_length=15,
+        choices=TipoUsuario.choices,
+        default=TipoUsuario.CLIENTE
+    )
+
+    cliente = models.OneToOneField(Cliente, on_delete=models.SET_NULL, null=True, blank=True)
+    mesero = models.OneToOneField('util.Mesero', on_delete=models.SET_NULL, null=True, blank=True)
+    personal_cocina = models.OneToOneField('util.PersonalCocina', on_delete=models.SET_NULL, null=True, blank=True)
+    administrador = models.OneToOneField(Administrador, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def es_cliente(self):
+        return self.tipo_usuario == self.TipoUsuario.CLIENTE
+
+    def es_empleado(self):
+        return self.tipo_usuario == self.TipoUsuario.EMPLEADO
+
+    def es_admin(self):
+        return self.tipo_usuario == self.TipoUsuario.ADMINISTRADOR
 
 # Modelo Proveedor
 class Proveedor(models.Model):
@@ -163,16 +187,6 @@ class Proveedor(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.contacto}"
-
-
-# Modelo Usuario
-class Usuario(models.Model):
-    nombre = models.CharField(max_length=100)
-    rol = models.CharField(max_length=50)
-    email = models.EmailField()
-
-    def __str__(self):
-        return self.nombre
 
 class Impuesto(models.Model):
     nombre = models.CharField(max_length=50)  # Ejemplo: IVA, ICE

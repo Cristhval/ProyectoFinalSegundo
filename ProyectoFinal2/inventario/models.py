@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from abc import ABC, abstractmethod
-from util.models import Administrador, Proveedor, Usuario
+from util.models import Administrador, Proveedor
 from pedidos.models import Pedido
 from menus.models import Producto
 

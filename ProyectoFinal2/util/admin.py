@@ -1,57 +1,77 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from .models import (
-    Cliente, Mesero, PersonalCocina, Administrador, Proveedor, Usuario, Impuesto
+    UsuarioPersonalizado, Cliente, Mesero, PersonalCocina, Administrador,
+    Proveedor, Impuesto
 )
 
-# Configuración de Cliente en Admin
-@admin.register(Cliente)
+
+# Configuración para UsuarioPersonalizado en el Admin de Django
+class UsuarioPersonalizadoAdmin(UserAdmin):
+    model = UsuarioPersonalizado
+    list_display = ('username', 'email', 'tipo_usuario', 'is_active', 'is_staff', 'is_superuser')
+    list_filter = ('tipo_usuario', 'is_active', 'is_staff')
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Información Personal', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Roles y Permisos', {'fields': ('tipo_usuario', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
+        ('Fechas Importantes', {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'tipo_usuario', 'is_staff', 'is_active')}
+        ),
+    )
+    search_fields = ('username', 'email')
+    ordering = ('username',)
+
+
+# Configuración para Cliente en el Admin
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'email', 'activo')
-    search_fields = ('nombre', 'apellido', 'cedula')
+    list_display = ('nombre', 'apellido', 'cedula', 'email', 'telefono', 'activo')
+    search_fields = ('nombre', 'apellido', 'cedula', 'email')
     list_filter = ('activo',)
-    ordering = ('apellido',)
-    filter_horizontal = ('historial_pedidos',)  # Para mejor gestión de pedidos
 
-# Configuración de Mesero en Admin
-@admin.register(Mesero)
-class MeseroAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'identificacion', 'esta_ocupado', 'pedidos_atendidos')
-    search_fields = ('nombre', 'apellido', 'cedula', 'identificacion')
-    list_filter = ('esta_ocupado',)
-    ordering = ('apellido',)
 
-# Configuración de PersonalCocina en Admin
-@admin.register(PersonalCocina)
-class PersonalCocinaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'identificacion', 'esta_cocinando')
-    search_fields = ('nombre', 'apellido', 'cedula', 'identificacion')
-    list_filter = ('esta_cocinando',)
-    ordering = ('apellido',)
-
-# Configuración de Administrador en Admin
-@admin.register(Administrador)
+# Configuración para Administrador en el Admin
 class AdministradorAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'rol')
-    search_fields = ('nombre', 'apellido', 'cedula')
-    ordering = ('apellido',)
+    list_display = ('nombre', 'apellido', 'cedula', 'email', 'telefono', 'rol')
+    search_fields = ('nombre', 'apellido', 'cedula', 'email')
+    list_filter = ('rol',)
 
-# Configuración de Proveedor en Admin
-@admin.register(Proveedor)
+
+# Configuración para Mesero en el Admin
+class MeseroAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'apellido', 'cedula', 'email', 'telefono', 'esta_ocupado', 'pedidos_atendidos')
+    search_fields = ('nombre', 'apellido', 'cedula', 'email')
+    list_filter = ('esta_ocupado',)
+
+
+# Configuración para Personal de Cocina en el Admin
+class PersonalCocinaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'apellido', 'cedula', 'email', 'telefono', 'esta_cocinando')
+    search_fields = ('nombre', 'apellido', 'cedula', 'email')
+    list_filter = ('esta_cocinando',)
+
+
+# Configuración para Proveedor en el Admin
 class ProveedorAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'contacto', 'email', 'direccion')
     search_fields = ('nombre', 'contacto', 'email')
-    ordering = ('nombre',)
 
-# Configuración de Usuario en Admin
-@admin.register(Usuario)
-class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'rol', 'email')
-    search_fields = ('nombre', 'email')
-    ordering = ('nombre',)
 
-# Configuración de Impuesto en Admin
-@admin.register(Impuesto)
+# Configuración para Impuesto en el Admin
 class ImpuestoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'porcentaje', 'descripcion')
     search_fields = ('nombre',)
-    ordering = ('nombre',)
+
+
+# Registrar los modelos en el panel de administración
+admin.site.register(UsuarioPersonalizado, UsuarioPersonalizadoAdmin)
+admin.site.register(Cliente, ClienteAdmin)
+admin.site.register(Administrador, AdministradorAdmin)
+admin.site.register(Mesero, MeseroAdmin)
+admin.site.register(PersonalCocina, PersonalCocinaAdmin)
+admin.site.register(Proveedor, ProveedorAdmin)
+admin.site.register(Impuesto, ImpuestoAdmin)
