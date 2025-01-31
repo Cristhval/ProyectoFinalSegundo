@@ -7,9 +7,11 @@ from .models import (
 # Configuración de Promoción en Admin
 @admin.register(Promocion)
 class PromocionAdmin(admin.ModelAdmin):
-    list_display = ('descripcion', 'porcentaje_descuento')
-    search_fields = ('descripcion',)
+    list_display = ('descripcion', 'porcentaje_descuento', 'tipo_clima', 'activa')  # 🔹 Agregar 'activa' para control de estado
+    list_filter = ('tipo_clima', 'activa')  # 🔹 Facilita la búsqueda por clima y estado
+    search_fields = ('descripcion', 'tipo_clima')  # 🔹 Permite búsqueda rápida
     ordering = ('descripcion',)
+    list_editable = ('activa',)  # 🔹 Permite cambiar el estado directamente desde la lista
 
 # Configuración de Factura en Admin
 @admin.register(Factura)

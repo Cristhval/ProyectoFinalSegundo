@@ -1,8 +1,19 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f4f4f4;
+    background-color: #f8f9fa; /* Color más claro */
+    padding-top: 20px;
 }
 h1 {
-    color: #333;
+    color: #f1adc8;
+    font-weight: bold;
+}
+p {
+    font-size: 18px;
+    color: #dc3378;
+}
+.btn {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin-top: 10px;
 }

@@ -1,34 +1,31 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Inicio</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <h1>Bienvenido al Sistema</h1>
+{% extends 'base.html' %}
 
-    {% if user.is_authenticated %}
-        <p>Hola, {{ user.username }}!</p>
-        {% if user.es_cliente %}
-            <a href="{% url 'vista_cliente' %}">Ir al Panel de Cliente</a>
-        {% elif user.es_empleado %}
-            <a href="{% url 'vista_empleado' %}">Ir al Panel de Empleado</a>
-        {% elif user.es_admin %}
-            <a href="{% url 'vista_admin' %}">Ir al Panel de Administrador</a>
+{% block title %}Página de Inicio{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h1>Bienvenido al Sistema</h1>
+
+        {% if user.is_authenticated %}
+            <p class="mt-3">Hola, <strong>{{ user.username }}</strong>!</p>
+
+            {% if user.es_cliente %}
+                <a href="{% url 'vista_cliente' %}" class="btn btn-primary">Ir al Panel de Cliente</a>
+            {% elif user.es_empleado %}
+                <a href="{% url 'vista_empleado' %}" class="btn btn-success">Ir al Panel de Empleado</a>
+            {% elif user.es_admin %}
+                <a href="{% url 'vista_admin' %}" class="btn btn-danger">Ir al Panel de Administrador</a>
+            {% endif %}
+
+            <br><br>
+            <!-- ✅ Logout con formulario POST -->
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary">Cerrar sesión</button>
+            </form>
+
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary mt-3">Iniciar sesión</a>
         {% endif %}
-        <br>
-
-        <!-- ✅ Logout con formulario POST -->
-        <form action="{% url 'logout' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit">Cerrar sesión</button>
-        </form>
-
-    {% else %}
-        <a href="{% url 'login' %}">Iniciar sesión</a>
-    {% endif %}
-</body>
-</html>
+    </div>
+{% endblock %}

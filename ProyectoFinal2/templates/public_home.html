@@ -1,11 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <title>Página Principal</title>
-</head>
-<body>
-    <h1>Bienvenido a nuestro sistema</h1>
-    <p>Inicia sesión para acceder a tu cuenta.</p>
-    <a href="{% url 'login' %}">Iniciar Sesión</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bienvenido a FastFood Express{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <h1 class="display-4 text-warning">🍔 ¡Bienvenido a FastFood Express! 🍟</h1>
+        <p class="lead">Disfruta de nuestras deliciosas hamburguesas, papas fritas y combos irresistibles.</p>
+
+        <!-- ✅ Imagen de fondo -->
+        <div class="mt-4">
+            <img src="{% static 'images/fastfood_banner.jpg' %}" alt="Comida rápida deliciosa" class="img-fluid rounded shadow-lg">
+        </div>
+
+        <!-- ✅ Botón para iniciar sesión -->
+        <div class="mt-4">
+            <a href="{% url 'login' %}" class="btn btn-lg btn-warning fw-bold shadow">🍔 Iniciar Sesión</a>
+        </div>
+    </div>
+{% endblock %}

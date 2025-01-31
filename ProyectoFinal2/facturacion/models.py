@@ -8,9 +8,11 @@ from pedidos.models import Pedido, ItemPedido  # Pedido e ItemPedido desde pedid
 class Promocion(models.Model):
     descripcion = models.CharField(max_length=255)
     porcentaje_descuento = models.FloatField()
+    tipo_clima = models.CharField(max_length=50,default="Desconocido", help_text="Ej: Lluvia, Soleado, Nublado")
+    activa = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.descripcion
+        return f"{self.descripcion}-{self.porcentaje_descuento}%-{self.tipo_clima}"
 
 # Modelo para la factura
 class Factura(models.Model):
