@@ -42,15 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-
-    'pedidos.apps.PedidosConfig',
-    'facturacion.apps.FacturacionConfig',
-    'finanzas.apps.FinanzasConfig',
-    'mesas.apps.MesasConfig',
-    'menus.apps.MenusConfig',
-    'estadisticas.apps.EstadisticasConfig',
-    'inventario.apps.InventarioConfig',
-    'util.apps.UtilConfig',
+    'pedidos',
+    'facturacion',
+    'mesas',
+    'menus',
+    'estadisticas',
+    'inventario',
+    'util',
 ]
 
 MIDDLEWARE = [

@@ -49,8 +49,7 @@ class Persona(models.Model):
 # Modelo Cliente
 class Cliente(Persona):
     activo = models.BooleanField(default=True)
-    historial_pedidos = models.ManyToManyField('pedidos.Pedido', blank=True, related_name='clientes_historial',
-                                               null=True)
+    historial_pedidos = models.ManyToManyField('pedidos.Pedido', blank=True, related_name='clientes_historial')
 
     def realizar_pedido(self, pedido):
         self.historial_pedidos.add(pedido)
@@ -69,11 +68,12 @@ class Cliente(Persona):
         from mesas.models import Reserva
         reserva = Reserva.objects.create(
             cliente=self,
-            mesa_id=datos_reserva['mesa_id'],
+            mesa=datos_reserva['mesa'],
             cantidad_personas=datos_reserva['cantidad_personas'],
             fecha_reserva=datos_reserva['fecha_reserva'],
             horario_inicio=datos_reserva['horario_inicio']
         )
+        reserva.save()
         return reserva
 
 
@@ -158,11 +158,16 @@ class UsuarioPersonalizado(AbstractUser):
         EMPLEADO = "Empleado"
         ADMINISTRADOR = "Administrador"
 
-    tipo_usuario = models.CharField(max_length=15, choices=TipoUsuario.choices, default=TipoUsuario.CLIENTE)
-    cliente = models.OneToOneField("util.Cliente", on_delete=models.SET_NULL, null=True, blank=True)
-    mesero = models.OneToOneField("util.Mesero", on_delete=models.SET_NULL, null=True, blank=True)
-    personal_cocina = models.OneToOneField("util.PersonalCocina", on_delete=models.SET_NULL, null=True, blank=True)
-    administrador = models.OneToOneField("util.Administrador", on_delete=models.SET_NULL, null=True, blank=True)
+    tipo_usuario = models.CharField(
+        max_length=15,
+        choices=TipoUsuario.choices,
+        default=TipoUsuario.CLIENTE
+    )
+
+    cliente = models.OneToOneField('util.Cliente', on_delete=models.SET_NULL, null=True, blank=True)
+    mesero = models.OneToOneField('util.Mesero', on_delete=models.SET_NULL, null=True, blank=True)
+    personal_cocina = models.OneToOneField('util.PersonalCocina', on_delete=models.SET_NULL, null=True, blank=True)
+    administrador = models.OneToOneField('util.Administrador', on_delete=models.SET_NULL, null=True, blank=True)
 
     def es_cliente(self):
         return self.tipo_usuario == self.TipoUsuario.CLIENTE
@@ -183,3 +188,10 @@ class Proveedor(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.contacto}"
 
+class Impuesto(models.Model):
+    nombre = models.CharField(max_length=50)  # Ejemplo: IVA, ICE
+    porcentaje = models.FloatField()  # Por ejemplo: 12.0 para el IVA
+    descripcion = models.TextField(blank=True, null=True)  # Opcional para más detalles
+
+    def __str__(self):
+        return f"{self.nombre} - {self.porcentaje}%"

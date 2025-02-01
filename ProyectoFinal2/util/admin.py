@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import (
     UsuarioPersonalizado, Cliente, Mesero, PersonalCocina, Administrador,
-    Proveedor
+    Proveedor, Impuesto
 )
 
 
@@ -61,6 +61,10 @@ class ProveedorAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'contacto', 'email')
 
 
+# Configuración para Impuesto en el Admin
+class ImpuestoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'porcentaje', 'descripcion')
+    search_fields = ('nombre',)
 
 
 # Registrar los modelos en el panel de administración
@@ -70,4 +74,4 @@ admin.site.register(Administrador, AdministradorAdmin)
 admin.site.register(Mesero, MeseroAdmin)
 admin.site.register(PersonalCocina, PersonalCocinaAdmin)
 admin.site.register(Proveedor, ProveedorAdmin)
-
+admin.site.register(Impuesto, ImpuestoAdmin)

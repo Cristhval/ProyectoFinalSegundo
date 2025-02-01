@@ -13,15 +13,31 @@ class PromocionAdmin(admin.ModelAdmin):
     ordering = ('descripcion',)
     list_editable = ('activa',)  # 🔹 Permite cambiar el estado directamente desde la lista
 
-# Configuración de Factura en Admin
+def calcular_total(obj):
+    return round(obj.total, 2)  # Mostrar total redondeado
+calcular_total.short_description = "Total"
+
+def calcular_subtotal(obj):
+    return round(obj.subtotal, 2)
+calcular_subtotal.short_description = "Subtotal"
+
+def calcular_impuesto(obj):
+    return round(obj.impuesto_total, 2)
+calcular_impuesto.short_description = "Impuesto Total"
+
+def calcular_descuento(obj):
+    return round(obj.descuento, 2)
+calcular_descuento.short_description = "Descuento"
+
 @admin.register(Factura)
 class FacturaAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'fecha', 'pedido', 'subtotal', 'impuesto_total', 'descuento', 'total', 'metodo_pago_efectivo', 'metodo_pago_tarjeta', 'metodo_pago_transferencia')
-    list_filter = ('fecha', 'pedido', 'metodo_pago_efectivo', 'metodo_pago_tarjeta', 'metodo_pago_transferencia')
+    list_display = ('numero', 'fecha', 'pedido', calcular_subtotal, calcular_impuesto, calcular_descuento, calcular_total)
+    list_filter = ('fecha', 'pedido')
     search_fields = ('numero', 'pedido__cliente__nombre')
     ordering = ('-fecha',)
-    readonly_fields = ('subtotal', 'impuesto_total', 'descuento', 'total')  # Hace que estos campos no sean editables
 
+    def save_model(self, request, obj, form, change):
+        obj.save()  # Esto forzará el cálculo antes de guardar
 
 # Configuración de Items de Factura en Admin
 @admin.register(ItemFactura)
@@ -38,11 +54,8 @@ class PagoTransferenciaAdmin(admin.ModelAdmin):
 
 @admin.register(PagoEfectivo)
 class PagoEfectivoAdmin(admin.ModelAdmin):
-    list_display = ('monto_pagado', 'cambio', 'cuenta_por_cobrar')
-    search_fields = ('monto_pagado',)
+    list_display = ('monto_pagado', 'cambio')  # 🔹 Eliminado 'cuenta_por_cobrar'
 
-    def cuenta_por_cobrar(self, obj):
-        return obj.cuenta_por_cobrar
 
 @admin.register(PagoTarjeta)
 class PagoTarjetaAdmin(admin.ModelAdmin):

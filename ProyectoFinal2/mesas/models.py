@@ -20,7 +20,12 @@ class Mesa(models.Model):
     identificador = models.CharField(max_length=50)
     numero_asientos = models.IntegerField()
     ubicacion = models.CharField(max_length=100)
-    estado = models.CharField(max_length=10, default="LIBRE")
+    estado = models.CharField(
+        max_length=10,
+        choices=[(tag.name, tag.value) for tag in EstadoMesa],
+        default=EstadoMesa.LIBRE.name,
+        verbose_name="Estado"
+    )
     mesas_unidas: Manager = models.ManyToManyField('self', blank=True, symmetrical=False)
     hora_disponible = models.DateTimeField(null=True, blank=True)
 
@@ -41,8 +46,8 @@ class Mesa(models.Model):
 
 class Reserva(models.Model):
     identificador = models.CharField(max_length=50)
-    cliente = models.ForeignKey("util.Cliente", on_delete=models.CASCADE)
-    mesa = models.ForeignKey("mesas.Mesa", on_delete=models.CASCADE)
+    cliente = models.ForeignKey('util.Cliente', on_delete=models.CASCADE)
+    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     cantidad_personas = models.IntegerField()
     fecha_reserva = models.DateField()
     horario_inicio = models.DateTimeField()

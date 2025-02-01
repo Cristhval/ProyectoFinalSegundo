@@ -11,6 +11,15 @@ class ItemPedidoAdmin(admin.ModelAdmin):
     list_filter = ('producto',)
     ordering = ('producto',)
 
+# Configuración de Pedido en Admin
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    list_display = ('numero', 'fecha_actual', 'cliente', 'estado')
+    search_fields = ('numero', 'cliente__nombre')
+    list_filter = ('estado', 'fecha_actual')
+    ordering = ('-fecha_actual',)
+    list_editable = ('estado',)
+
 # Configuración de Historial en Admin
 @admin.register(Historial)
 class HistorialAdmin(admin.ModelAdmin):
@@ -25,17 +34,13 @@ class RestauranteAdmin(admin.ModelAdmin):
     search_fields = ('nombre',)
     ordering = ('nombre',)
 
-# Configuración de RegistroHistorico en Admin
+# Inline para mostrar pedidos dentro de RegistroHistorico
+class PedidoInline(admin.TabularInline):  # O usa StackedInline si prefieres
+    model = RegistroHistorico.pedidos.through  # 🔹 ManyToMany requiere `.through`
+    extra = 1  # Número de filas vacías para agregar nuevos pedidos
+
+# Registro en Admin
 @admin.register(RegistroHistorico)
 class RegistroHistoricoAdmin(admin.ModelAdmin):
-    list_display = ('id',)
-    filter_horizontal = ('pedidos',)
-
-@admin.register(Pedido)
-class PedidoAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'fecha_actual', 'cliente', 'mesero', 'mesa', 'estado')  # 🔹 Agregado mesero y mesa
-    search_fields = ('numero', 'cliente__nombre', 'mesero__nombre')
-    list_filter = ('estado', 'fecha_actual', 'mesero', 'mesa')
-    ordering = ('-fecha_actual',)
-    list_editable = ('estado',)
-
+    list_display = ('id',)  # Muestra solo el ID en la lista
+    inlines = [PedidoInline]  # 🔹 Ahora mostrará los pedidos dentro del registro

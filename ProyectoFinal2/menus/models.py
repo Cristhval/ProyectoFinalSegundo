@@ -1,7 +1,7 @@
 from django.db import models
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-
+from util.models import Impuesto
 
 class Menu(models.Model):
     nombre = models.CharField(max_length=50)
@@ -25,13 +25,13 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
-class Producto(models.Model):
+class Producto(models.Model):  # Se mantiene aquí y se importará en pedidos
     nombre = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=50)
     precio = models.FloatField()
     disponibilidad = models.BooleanField()
-    categoria = models.ForeignKey("menus.Categoria", on_delete=models.CASCADE, related_name='productos')
-    impuestos = models.ManyToManyField("finanzas.Impuesto", blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos')
+    impuestos = models.ManyToManyField(Impuesto, blank=True)
 
     def precio_con_impuestos(self):
         total_impuesto = sum(imp.porcentaje for imp in self.impuestos.all()) if self.impuestos.exists() else 0

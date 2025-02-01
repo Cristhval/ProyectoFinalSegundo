@@ -2,7 +2,9 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from datetime import date
+
 from django.shortcuts import render
+
 from facturacion.models import Factura, ItemFactura  # Facturación
 from pedidos.models import Pedido  # Pedidos
 from util.models import Persona, Cliente, Mesero  # Util
@@ -29,25 +31,23 @@ class Producto(models.Model):
 class Factura(models.Model):
     numero = models.CharField(max_length=20, unique=True)
     fecha = models.DateField()
-    impuesto_total = models.FloatField(default=0.0)
+    impuesto = models.FloatField()
     descuento = models.FloatField()
     subtotal = models.FloatField(default=0)
     total = models.FloatField(default=0)
-    mesero = models.ForeignKey('util.Mesero', null=True, blank=True, on_delete=models.SET_NULL)
-    mesa = models.ForeignKey('mesas.Mesa', null=True, blank=True, on_delete=models.SET_NULL)
-    pedido = models.ForeignKey('pedidos.Pedido', on_delete=models.CASCADE, related_name="facturas_estadisticas")  # 🔹 Se corrigió related_name
+    mesero = models.ForeignKey(Mesero, related_name='factura', on_delete=models.SET_NULL, null=True)
+    mesa = models.ForeignKey(Mesa, related_name='factura', on_delete=models.SET_NULL, null=True)
+    item_factura_list = models.ForeignKey(ItemFactura, related_name='factura_items', on_delete=models.CASCADE,
+                                          null=True)
 
     def __str__(self):
         return self.numero
 
     def calcular_subtotal(self):
-        if self.pedido:
-            self.subtotal = self.pedido.calcular_total()
-        else:
-            self.subtotal = 0.0
+        self.subtotal = self.item_factura_list.subtotal
 
     def calcular_total(self):
-        self.total = self.subtotal + self.impuesto_total - self.descuento
+        self.total = self.subtotal + self.impuesto - self.descuento
 
     def save(self, *args, **kwargs):
         self.calcular_subtotal()
@@ -58,6 +58,7 @@ class Factura(models.Model):
 def actualizar_pedidos_mesero(sender, instance, **kwargs):
     if instance.mesero:
         instance.mesero.actualizar_pedidos_atendidos()
+
 # Modelo para Estadísticas
 class Estadistica(models.Model):
     titulo = models.CharField(max_length=50)
