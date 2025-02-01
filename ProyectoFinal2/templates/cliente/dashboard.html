@@ -6,9 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Bienvenido, Cliente</h1>
-    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-    </form>
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">🍔 Bienvenido, Cliente</h1>
+
+        <div class="alert alert-warning">
+            Descubre nuestras promociones y ofertas exclusivas.
+        </div>
+
+        <form action="{% url 'logout' %}" method="post" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+        </form>
+    </div>
 {% endblock %}

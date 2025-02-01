@@ -6,12 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1 class="text-center">Bienvenido, Administrador</h1>
-        <form action="{% url 'logout' %}" method="post" class="text-center">
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">👨‍💼 Panel de Administrador</h1>
+
+        <div class="alert alert-info">
+            Aquí puedes gestionar el sistema y usuarios.
+        </div>
+
+        <form action="{% url 'logout' %}" method="post" class="mt-3">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Cerrar sesión</button>
         </form>
     </div>
 {% endblock %}
-

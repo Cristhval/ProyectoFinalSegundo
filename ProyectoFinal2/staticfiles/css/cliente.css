@@ -1,0 +1,24 @@
+/* cliente.css */
+body {
+    background-color: #fff5e6; /* Fondo Beige */
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #e67e22; /* Naranja */
+}
+
+button {
+    background-color: #e67e22; /* Naranja */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #d35400;
+}
