@@ -6,13 +6,11 @@ from mesas.models import Mesa
 from abc import ABC, abstractmethod
 
 # Enumerador de estados del pedido
-class Estado(Enum):
+class Estado(models.TextChoices):
     EN_PREPARACION = 'EN_PREPARACION'
     PAGADO = 'PAGADO'
     PENDIENTE = 'PENDIENTE'
-    PREPARADO = 'PREPARADO'
     SERVIDO = 'SERVIDO'
-    RESERVADO = 'RESERVADO'
 
 
 # ✅ Interfaz corregida (sin models.Model)
@@ -64,12 +62,16 @@ class InteraccionCliente(ABC):  # ✅ Ya no hereda de models.Model
 class ItemPedido(models.Model):
     cantidad = models.PositiveIntegerField(default=1)
     observacion = models.CharField(max_length=100, blank=True, default='Ninguna')
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='item_pedido_list')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cliente = models.ForeignKey("util.Cliente", on_delete=models.CASCADE, related_name='item_pedido_list')
+    producto = models.ForeignKey("menus.Producto", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Item del Pedido"
         verbose_name_plural = "Items del Pedido"
+
+    def subtotal(self):
+        """Calcula el subtotal del item basado en cantidad y precio del producto"""
+        return self.producto.precio * self.cantidad
 
     def __str__(self):
         return f"{self.producto.nombre} | {self.cantidad} | {self.cliente.nombre} | {self.observacion}"
@@ -77,15 +79,13 @@ class ItemPedido(models.Model):
 
 # Modelo de Pedido
 class Pedido(models.Model):
-    fecha_actual = models.DateTimeField(auto_now=True, editable=False)
+    fecha_actual = models.DateTimeField(auto_now=True)
     informacion = models.TextField(editable=False)
-    numero = models.PositiveIntegerField(editable=False, unique=True)
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='pedidos_cliente')
-    estado = models.CharField(
-        max_length=50,
-        choices=[(tag.value, tag.name) for tag in Estado],
-        default=Estado.PENDIENTE.value
-    )
+    numero = models.PositiveIntegerField(unique=True)
+    mesa = models.ForeignKey("mesas.Mesa", null=True, blank=True, on_delete=models.SET_NULL)
+    cliente = models.ForeignKey('util.Cliente', on_delete=models.CASCADE, related_name='pedidos_cliente', null=True)
+    mesero = models.ForeignKey('util.Mesero', null=True, blank=True, on_delete=models.SET_NULL)
+    estado = models.CharField(max_length=50, choices=Estado.choices, default=Estado.PENDIENTE)
     item_pedido_list = models.ManyToManyField(ItemPedido, blank=True)
 
     class Meta:
@@ -101,7 +101,7 @@ class Pedido(models.Model):
         self.item_pedido_list.add(item)
         self.save()
 
-    def calcular_total(self):
+    def calcular_total(self):  # 🔹 Ahora se llama igual que en Factura
         return sum(item.producto.precio * item.cantidad for item in self.item_pedido_list.all())
 
     def mostrar_tiempo_espera(self):
@@ -120,7 +120,7 @@ class Pedido(models.Model):
 
 # Modelo de Historial de pedidos
 class Historial(models.Model):
-    pedidos = models.ManyToManyField(Pedido)
+    pedidos = models.ManyToManyField("pedidos.Pedido", related_name="historial_pedidos")
 
     class Meta:
         verbose_name = "Historial"

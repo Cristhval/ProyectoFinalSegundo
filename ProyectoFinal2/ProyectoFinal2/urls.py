@@ -20,19 +20,29 @@ from django.contrib.auth.views import LoginView, LogoutView
 from util import views
 from pedidos.views import pedido_con_pokemon
 from facturacion.views import promociones_por_clima
+from facturacion.views import vista_metodos_pago  # Importar desde facturacion/views.py
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.vista_publica, name='public_home'),  # Página pública
     path('home/', views.home, name='home'),  # Redirigir usuarios autenticados
 
-    # Vistas para diferentes usuarios
+    # 📌 Vistas del cliente
     path('cliente/', views.vista_cliente, name='vista_cliente'),
+    path('cliente/pedidos/', views.vista_pedidos_cliente, name='vista_pedidos_cliente'),
+    path('cliente/metodos-pago/', vista_metodos_pago, name='vista_metodos_pago'),
+
+
+    # 📌 Vistas de empleado y admin
     path('empleado/', views.vista_empleado, name='vista_empleado'),
     path('admin-dashboard/', views.vista_admin, name='vista_admin'),
 
     # Login y Logout
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+
+    # Funcionalidades adicionales
     path('pedido-pokemon/', pedido_con_pokemon, name='pedido_pokemon'),
     path('promociones/', promociones_por_clima, name='promociones'),
 ]
+

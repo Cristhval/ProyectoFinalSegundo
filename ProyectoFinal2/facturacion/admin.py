@@ -16,10 +16,12 @@ class PromocionAdmin(admin.ModelAdmin):
 # Configuración de Factura en Admin
 @admin.register(Factura)
 class FacturaAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'fecha', 'pedido', 'subtotal', 'impuesto_total', 'descuento', 'total')
-    list_filter = ('fecha', 'pedido')
+    list_display = ('numero', 'fecha', 'pedido', 'subtotal', 'impuesto_total', 'descuento', 'total', 'metodo_pago_efectivo', 'metodo_pago_tarjeta', 'metodo_pago_transferencia')
+    list_filter = ('fecha', 'pedido', 'metodo_pago_efectivo', 'metodo_pago_tarjeta', 'metodo_pago_transferencia')
     search_fields = ('numero', 'pedido__cliente__nombre')
     ordering = ('-fecha',)
+    readonly_fields = ('subtotal', 'impuesto_total', 'descuento', 'total')  # Hace que estos campos no sean editables
+
 
 # Configuración de Items de Factura en Admin
 @admin.register(ItemFactura)
@@ -38,6 +40,9 @@ class PagoTransferenciaAdmin(admin.ModelAdmin):
 class PagoEfectivoAdmin(admin.ModelAdmin):
     list_display = ('monto_pagado', 'cambio', 'cuenta_por_cobrar')
     search_fields = ('monto_pagado',)
+
+    def cuenta_por_cobrar(self, obj):
+        return obj.cuenta_por_cobrar
 
 @admin.register(PagoTarjeta)
 class PagoTarjetaAdmin(admin.ModelAdmin):

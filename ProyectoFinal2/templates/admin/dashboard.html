@@ -9,13 +9,36 @@
     <div class="container text-center mt-5">
         <h1 class="mb-4">👨‍💼 Panel de Administrador</h1>
 
-        <div class="alert alert-info">
-            Aquí puedes gestionar el sistema y usuarios.
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="card bg-pedidos shadow p-4">
+                    <p>📦 <strong>Pedidos Totales</strong></p>
+                    <h2>{{ total_pedidos }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-clientes shadow p-4">
+                    <p>👥 <strong>Clientes Registrados</strong></p>
+                    <h2>{{ total_clientes }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-promociones shadow p-4">
+                    <p>🎉 <strong>Promociones Activas</strong></p>
+                    <h2>{{ total_promociones }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-facturas shadow p-4">
+                    <p>💰 <strong>Facturas Generadas</strong></p>
+                    <h2>{{ total_facturas }}</h2>
+                </div>
+            </div>
         </div>
 
-        <form action="{% url 'logout' %}" method="post" class="mt-3">
+        <form action="{% url 'logout' %}" method="post" class="mt-4">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+            <button type="submit" class="btn btn-danger btn-lg shadow-lg">Cerrar sesión</button>
         </form>
     </div>
 {% endblock %}

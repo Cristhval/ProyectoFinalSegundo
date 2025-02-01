@@ -11,15 +11,6 @@ class ItemPedidoAdmin(admin.ModelAdmin):
     list_filter = ('producto',)
     ordering = ('producto',)
 
-# Configuración de Pedido en Admin
-@admin.register(Pedido)
-class PedidoAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'fecha_actual', 'cliente', 'estado')
-    search_fields = ('numero', 'cliente__nombre')
-    list_filter = ('estado', 'fecha_actual')
-    ordering = ('-fecha_actual',)
-    list_editable = ('estado',)
-
 # Configuración de Historial en Admin
 @admin.register(Historial)
 class HistorialAdmin(admin.ModelAdmin):
@@ -39,3 +30,12 @@ class RestauranteAdmin(admin.ModelAdmin):
 class RegistroHistoricoAdmin(admin.ModelAdmin):
     list_display = ('id',)
     filter_horizontal = ('pedidos',)
+
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    list_display = ('numero', 'fecha_actual', 'cliente', 'mesero', 'mesa', 'estado')  # 🔹 Agregado mesero y mesa
+    search_fields = ('numero', 'cliente__nombre', 'mesero__nombre')
+    list_filter = ('estado', 'fecha_actual', 'mesero', 'mesa')
+    ordering = ('-fecha_actual',)
+    list_editable = ('estado',)
+

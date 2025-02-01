@@ -5,6 +5,9 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse
 from django.contrib.auth import logout
 from django.views import View
+from pedidos.models import Pedido
+from util.models import Cliente
+from facturacion.models import Promocion, Factura
 
 class CustomLoginView(LoginView):
     template_name = "registration/login.html"
@@ -17,7 +20,8 @@ class CustomLogoutView(View):
     def post(self, request):
         logout(request)
         return redirect(reverse('public_home'))
- #Vista para usuarios NO autenticados (página de inicio pública)
+
+# Vista para usuarios NO autenticados (página de inicio pública)
 def vista_publica(request):
     return render(request, 'public_home.html')
 
@@ -35,14 +39,20 @@ def vista_empleado(request):
         return render(request, 'empleado/dashboard.html')
     return redirect('login')
 
-# Vista para el administrador
+# Vista para el administrador con estadísticas
 @login_required
 def vista_admin(request):
     if request.user.es_admin():
-        return render(request, 'admin/dashboard.html')
+        context = {
+            "total_pedidos": Pedido.objects.count(),
+            "total_clientes": Cliente.objects.count(),
+            "total_promociones": Promocion.objects.filter(activa=True).count(),
+            "total_facturas": Factura.objects.count(),
+        }
+        return render(request, 'admin/dashboard.html', context)
     return redirect('login')
 
-# Vista para usuarios no autenticados
+# Vista para usuarios autenticados, redirige al dashboard correspondiente
 @login_required
 def home(request):
     user = request.user
@@ -57,3 +67,14 @@ def home(request):
 
     # Si el usuario no tiene tipo definido, enviarlo a la página pública
     return redirect(reverse('public_home'))
+
+@login_required
+def vista_pedidos_cliente(request):
+    try:
+        cliente = request.user.cliente  # Acceder al Cliente relacionado con el usuario
+        pedidos = Pedido.objects.filter(cliente=cliente)  # Filtrar pedidos del cliente
+    except Cliente.DoesNotExist:
+        pedidos = None  # Si el usuario no tiene un Cliente asociado
+
+    return render(request, 'cliente/pedidos.html', {'pedidos': pedidos})
+

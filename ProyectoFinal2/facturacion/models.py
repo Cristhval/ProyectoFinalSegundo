@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import date
-from util.models import Cliente, Impuesto  # Cliente e Impuesto desde util
+from util.models import Cliente # Cliente e Impuesto desde util
 from menus.models import Producto  # Producto desde menus
 from pedidos.models import Pedido, ItemPedido  # Pedido e ItemPedido desde pedidos
 
@@ -8,11 +8,11 @@ from pedidos.models import Pedido, ItemPedido  # Pedido e ItemPedido desde pedid
 class Promocion(models.Model):
     descripcion = models.CharField(max_length=255)
     porcentaje_descuento = models.FloatField()
-    tipo_clima = models.CharField(max_length=50,default="Desconocido", help_text="Ej: Lluvia, Soleado, Nublado")
+    tipo_clima = models.CharField(max_length=50, default="Desconocido", help_text="Ej: Lluvia, Soleado, Nublado")
     activa = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.descripcion}-{self.porcentaje_descuento}%-{self.tipo_clima}"
+        return f"{self.descripcion} - {self.porcentaje_descuento}% - {self.tipo_clima}"
 
 # Modelo para la factura
 class Factura(models.Model):
@@ -22,22 +22,22 @@ class Factura(models.Model):
     impuesto_total = models.FloatField(default=0.0)
     descuento = models.FloatField(default=0.0)
     fecha = models.DateField(default=date.today)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)  # Relación con Pedido
-    metodo_pago_efectivo = models.ForeignKey('PagoEfectivo', null=True, blank=True, on_delete=models.SET_NULL)
+    pedido = models.ForeignKey("pedidos.Pedido", on_delete=models.CASCADE, related_name="facturas_facturacion")
+    metodo_pago_efectivo = models.ForeignKey("facturacion.PagoEfectivo", null=True, blank=True,on_delete=models.SET_NULL)
     metodo_pago_tarjeta = models.ForeignKey('PagoTarjeta', null=True, blank=True, on_delete=models.SET_NULL)
     metodo_pago_transferencia = models.ForeignKey('PagoTransferencia', null=True, blank=True, on_delete=models.SET_NULL)
     promocion = models.ForeignKey(Promocion, null=True, blank=True, on_delete=models.SET_NULL)
 
     def calcular_impuesto_total(self):
         impuesto_total = 0.0
-        for item in self.pedido.itempedido_set.all():
+        for item in self.pedido.item_pedido_list.all():
             for impuesto in item.producto.impuestos.all():
-                impuesto_total += item.subtotal() * (impuesto.porcentaje / 100)
+                impuesto_total += item.calcular_subtotal() * (impuesto.porcentaje / 100)
         return impuesto_total
 
     def calcular_monto_total(self):
-        self.subtotal = self.pedido.total_pedido()
-        self.descuento = self.pedido.total_pedido() * (self.promocion.porcentaje_descuento / 100) if self.promocion else 0.0
+        self.subtotal = self.pedido.calcular_total()  # 🔹 Usa el método correcto
+        self.descuento = self.subtotal * (self.promocion.porcentaje_descuento / 100) if self.promocion else 0.0
         self.impuesto_total = self.calcular_impuesto_total()
         self.total = self.subtotal - self.descuento + self.impuesto_total
 
@@ -56,7 +56,7 @@ class ItemFactura(models.Model):
     subtotal = models.FloatField()
 
     def calcular_subtotal(self):
-        self.subtotal = self.item_pedido.subtotal()  # Usa el subtotal de ItemPedido
+        self.subtotal = self.item_pedido.calcular_subtotal()  # 🔹 Usa calcular_subtotal de ItemPedido
 
     def save(self, *args, **kwargs):
         self.calcular_subtotal()
@@ -79,7 +79,8 @@ class PagoTransferencia(MetodoDePago):
     banco_origen = models.CharField(max_length=255)
 
 # Modelo para el pago en efectivo
-class PagoEfectivo(MetodoDePago):
+class PagoEfectivo(models.Model):
+    monto_pagado = models.FloatField()
     cambio = models.FloatField()
 
 # Modelo para el pago con tarjeta

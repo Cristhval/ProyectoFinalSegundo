@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Métodos de Pago{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">💳 Métodos de Pago</h1>
+
+        {% if facturas %}
+            <h3>Historial de Pagos</h3>
+            <ul class="list-group">
+                {% for factura in facturas %}
+                    <li class="list-group-item">
+                        <strong>Factura #{{ factura.numero }}</strong> - Total: ${{ factura.total }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Pagos Realizados</h3>
+            <ul class="list-group">
+                {% for pago in pagos_efectivo %}
+                    <li class="list-group-item">💵 Pago en efectivo: ${{ pago.monto_pagado }}</li>
+                {% endfor %}
+                {% for pago in pagos_tarjeta %}
+                    <li class="list-group-item">💳 Pago con tarjeta ({{ pago.numero_tarjeta }}): ${{ pago.monto_pagado }}</li>
+                {% endfor %}
+                {% for pago in pagos_transferencia %}
+                    <li class="list-group-item">🏦 Transferencia desde {{ pago.banco_origen }}: ${{ pago.monto_pagado }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tienes métodos de pago registrados.</p>
+        {% endif %}
+    </div>
+{% endblock %}

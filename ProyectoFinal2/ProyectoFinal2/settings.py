@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'pedidos.apps.PedidosConfig',
     'facturacion.apps.FacturacionConfig',
+    'finanzas.apps.FinanzasConfig',
     'mesas.apps.MesasConfig',
     'menus.apps.MenusConfig',
     'estadisticas.apps.EstadisticasConfig',

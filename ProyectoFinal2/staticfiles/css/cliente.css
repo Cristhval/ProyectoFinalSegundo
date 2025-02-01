@@ -10,7 +10,21 @@ h1 {
     color: #e67e22; /* Naranja */
 }
 
-button {
+/* 📌 Estilo para las tarjetas de accesos rápidos */
+.card {
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* 📌 Estilo para los botones */
+button, .btn {
     background-color: #e67e22; /* Naranja */
     color: white;
     border: none;
@@ -19,6 +33,6 @@ button {
     font-weight: bold;
 }
 
-button:hover {
+button:hover, .btn:hover {
     background-color: #d35400;
 }

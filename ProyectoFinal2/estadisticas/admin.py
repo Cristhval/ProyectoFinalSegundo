@@ -4,10 +4,11 @@ from .models import Factura, Estadistica, Reporte, Grafico
 # Configuración de Factura en Admin
 @admin.register(Factura)
 class FacturaAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'fecha', 'mesero', 'mesa', 'subtotal', 'impuesto', 'descuento', 'total')
-    list_filter = ('fecha', 'mesero', 'mesa')
-    search_fields = ('numero', 'mesero__nombre', 'mesa__codigo')
+    list_display = ('numero', 'fecha', 'pedido', 'subtotal', 'impuesto_total', 'descuento', 'total')
+    list_filter = ('fecha', 'pedido', 'mesero', 'mesa')  # 🔹 Referencias corregidas
+    search_fields = ('numero', 'pedido__cliente__nombre', 'mesero__nombre', 'mesa__codigo')
     ordering = ('-fecha',)
+
 
 # Configuración de Estadísticas en Admin
 @admin.register(Estadistica)

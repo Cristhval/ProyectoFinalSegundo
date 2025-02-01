@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📋 Mis Pedidos{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/cliente.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">📋 Historial de Pedidos</h1>
+
+        {% if pedidos %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                        <tr>
+                            <td>#{{ pedido.id }}</td>
+                            <td>{{ pedido.fecha }}</td>
+                            <td>${{ pedido.total }}</td>
+                            <td>{{ pedido.estado }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No tienes pedidos registrados.</p>
+        {% endif %}
+
+        <a href="{% url 'vista_cliente' %}" class="btn btn-secondary mt-3">Volver al Panel</a>
+    </div>
+{% endblock %}

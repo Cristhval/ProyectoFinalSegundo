@@ -13,9 +13,41 @@
             Descubre nuestras promociones y ofertas exclusivas.
         </div>
 
-        <form action="{% url 'logout' %}" method="post" class="mt-3">
+        <!-- 📌 Accesos rápidos para clientes -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 Mis Pedidos</h5>
+                        <p class="card-text">Consulta tu historial de pedidos.</p>
+                        <a href="{% url 'vista_pedidos_cliente' %}" class="btn btn-primary">Ver Pedidos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">🎉 Promociones</h5>
+                        <p class="card-text">Aprovecha las ofertas según el clima.</p>
+                        <a href="{% url 'promociones' %}" class="btn btn-success">Ver Promociones</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">💳 Métodos de Pago</h5>
+                        <p class="card-text">Consulta tus métodos de pago y facturación.</p>
+                        <a href="{% url 'vista_metodos_pago' %}" class="btn btn-warning">Ver Pagos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'logout' %}" method="post" class="mt-5">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+            <button type="submit" class="btn btn-danger btn-lg">Cerrar sesión</button>
         </form>
     </div>
 {% endblock %}
+
