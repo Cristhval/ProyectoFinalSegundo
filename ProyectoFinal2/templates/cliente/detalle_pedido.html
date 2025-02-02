@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📄 Detalles del Pedido #{{ pedido.numero }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/cliente.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">📄 Detalles del Pedido #{{ pedido.numero }}</h1>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Fecha</th>
+                <td>{{ pedido.fecha_actual|date:"Y-m-d H:i" }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>
+                    {% if pedido.estado == "PENDIENTE" %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    {% elif pedido.estado == "SERVIDO" %}
+                        <span class="badge bg-success">Servido</span>
+                    {% else %}
+                        <span class="badge bg-info">{{ pedido.estado }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>${{ pedido.calcular_total }}</td>
+            </tr>
+        </table>
+
+        <h3 class="mt-4">🛒 Productos en el Pedido</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pedido.items.all %}
+                    <tr>
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>${{ item.producto.precio }}</td>
+                        <td>${{ item.calcular_subtotal }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if items_cajita %}
+            <h3 class="mt-4">🎁 Pokémon de Regalo</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Pokémon Asignado</th>
+                        <th>Ver Pokémon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items_cajita %}
+                        <tr>
+                            <td>{{ item.producto.nombre }}</td>
+                            <td>{{ item.pokemon_nombre|default:"No asignado" }}</td>
+                            <td>
+                                <a href="{% url 'ver_pokemon_pedido' pedido.numero %}" class="btn btn-primary">
+                                    🎮 Ver Pokémon
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <a href="{% url 'vista_pedidos_cliente' %}" class="btn btn-secondary mt-3">Volver al Historial</a>
+    </div>
+{% endblock %}

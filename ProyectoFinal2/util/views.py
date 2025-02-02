@@ -70,11 +70,11 @@ def home(request):
 
 @login_required
 def vista_pedidos_cliente(request):
-    try:
-        cliente = request.user.cliente  # Acceder al Cliente relacionado con el usuario
-        pedidos = Pedido.objects.filter(cliente=cliente)  # Filtrar pedidos del cliente
-    except Cliente.DoesNotExist:
-        pedidos = None  # Si el usuario no tiene un Cliente asociado
+    cliente = getattr(request.user, 'cliente', None)
+
+    if cliente:
+        pedidos = Pedido.objects.filter(cliente=cliente).order_by('-fecha_actual')  # Ordenar por fecha
+    else:
+        pedidos = []  # Asegurar que pedidos no sea None
 
     return render(request, 'cliente/pedidos.html', {'pedidos': pedidos})
-

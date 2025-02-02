@@ -20,6 +20,10 @@ class ItemPedido(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     pedido = models.ForeignKey("pedidos.Pedido", on_delete=models.CASCADE, related_name="items")
 
+        # 🔹 Campos para guardar el Pokémon asignado a la Cajita Feliz
+    pokemon_id = models.PositiveIntegerField(null=True, blank=True)
+    pokemon_nombre = models.CharField(max_length=50, null=True, blank=True)
+
     class Meta:
         verbose_name = "Item del Pedido"
         verbose_name_plural = "Items del Pedido"
@@ -36,7 +40,8 @@ class Pedido(models.Model):
     fecha_actual = models.DateTimeField(auto_now=True, editable=False)
     numero = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="pedidos_cliente")
-    mesero = models.ForeignKey(Mesero, on_delete=models.SET_NULL, null=True, blank=True, related_name="pedidos_mesero")
+    mesero = models.ForeignKey(Mesero, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name="pedidos_mesero")
     mesa = models.ForeignKey(Mesa, on_delete=models.SET_NULL, null=True, blank=True, related_name="pedidos_mesa")
     estado = models.CharField(
         max_length=50,

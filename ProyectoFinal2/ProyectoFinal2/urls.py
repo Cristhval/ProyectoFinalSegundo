@@ -18,9 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from util import views
-from pedidos.views import pedido_con_pokemon
-from facturacion.views import promociones_por_clima
-from facturacion.views import vista_metodos_pago  # Importar desde facturacion/views.py
+from pedidos.views import detalle_pedido, ver_pokemon_pedido
+from facturacion.views import promociones_por_clima, vista_metodos_pago
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,7 +30,8 @@ urlpatterns = [
     path('cliente/', views.vista_cliente, name='vista_cliente'),
     path('cliente/pedidos/', views.vista_pedidos_cliente, name='vista_pedidos_cliente'),
     path('cliente/metodos-pago/', vista_metodos_pago, name='vista_metodos_pago'),
-
+    path('detalle/<int:pedido_numero>/', detalle_pedido, name='detalle_pedido'),
+    path('pedido/<int:pedido_numero>/pokemon/', ver_pokemon_pedido, name='ver_pokemon_pedido'),
 
     # 📌 Vistas de empleado y admin
     path('empleado/', views.vista_empleado, name='vista_empleado'),
@@ -42,7 +42,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
 
     # Funcionalidades adicionales
-    path('pedido-pokemon/', pedido_con_pokemon, name='pedido_pokemon'),
     path('promociones/', promociones_por_clima, name='promociones'),
 ]
+
 
