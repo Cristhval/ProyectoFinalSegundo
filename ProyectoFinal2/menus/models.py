@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from util.models import Impuesto
 
+# --- MODELO MENU ---
 class Menu(models.Model):
     nombre = models.CharField(max_length=50)
-    estado = models.BooleanField()
+    estado = models.BooleanField(default=True)  # 🔹 Agregado default=True
 
     def __str__(self):
         return self.nombre
@@ -18,6 +19,7 @@ class Menu(models.Model):
         self.estado = False
         self.save()
 
+# --- MODELO CATEGORIA ---
 class Categoria(models.Model):
     nombre = models.CharField(max_length=50)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='categorias')
@@ -25,16 +27,17 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
-class Producto(models.Model):  # Se mantiene aquí y se importará en pedidos
+# --- MODELO PRODUCTO ---
+class Producto(models.Model):
     nombre = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=50)
+    descripcion = models.TextField()  # 🔹 Cambiado de CharField a TextField
     precio = models.FloatField()
-    disponibilidad = models.BooleanField()
+    disponibilidad = models.BooleanField(default=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos')
     impuestos = models.ManyToManyField(Impuesto, blank=True)
 
     def precio_con_impuestos(self):
-        total_impuesto = sum(imp.porcentaje for imp in self.impuestos.all()) if self.impuestos.exists() else 0
+        total_impuesto = sum(imp.porcentaje for imp in self.impuestos.all())
         return round(self.precio * (1 + total_impuesto / 100), 2)
 
     def __str__(self):
@@ -44,7 +47,7 @@ class Producto(models.Model):  # Se mantiene aquí y se importará en pedidos
         self.disponibilidad = disponible
         self.save()
 
-# Interfaz IMenu
+# --- INTERFAZ MENU ---
 class IMenu(ABC):
 
     @abstractmethod
@@ -83,8 +86,7 @@ class IMenu(ABC):
     def mostrar_menu(self, menu_id: int) -> Dict[str, Any]:
         pass
 
-
-# Implementación de IMenu
+# --- SERVICIO MENU ---
 class MenuService(IMenu):
 
     def agregar_producto(self, id_categoria: int, producto: Producto) -> None:
@@ -104,15 +106,10 @@ class MenuService(IMenu):
         Categoria.objects.filter(id=id_categoria).delete()
 
     def modificar_categoria(self, categoria: Categoria) -> None:
-        Categoria.objects.filter(id=categoria.id).update(nombre=categoria.nombre)
+        categoria.save()  # 🔹 Ahora guarda cambios en la instancia
 
     def modificar_producto(self, producto: Producto) -> None:
-        Producto.objects.filter(id=producto.id).update(
-            nombre=producto.nombre,
-            descripcion=producto.descripcion,
-            precio=producto.precio,
-            disponibilidad=producto.disponibilidad
-        )
+        producto.save()  # 🔹 Ahora guarda cambios en la instancia
 
     def buscar_categoria(self, nombre: str) -> List[Categoria]:
         return list(Categoria.objects.filter(nombre__icontains=nombre))

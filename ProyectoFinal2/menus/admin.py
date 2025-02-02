@@ -1,27 +1,25 @@
 from django.contrib import admin
 from .models import Menu, Categoria, Producto
+from util.models import Impuesto  # ✅ Importar Impuesto
 
-# Configuración de Menús en Admin
+# --- CONFIGURACIÓN PARA MENU ---
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'estado')
-    list_filter = ('estado',)
     search_fields = ('nombre',)
-    ordering = ('nombre',)
+    list_filter = ('estado',)
 
-# Configuración de Categorías en Admin
+# --- CONFIGURACIÓN PARA CATEGORIA ---
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'menu')
-    list_filter = ('menu',)
     search_fields = ('nombre', 'menu__nombre')
-    ordering = ('nombre',)
+    list_filter = ('menu',)
 
-# Configuración de Productos en Admin
+# --- CONFIGURACIÓN PARA PRODUCTO ---
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'descripcion', 'precio', 'disponibilidad', 'categoria')
-    list_filter = ('categoria', 'disponibilidad')
+    list_display = ('nombre', 'precio', 'disponibilidad', 'categoria')
     search_fields = ('nombre', 'categoria__nombre')
-    ordering = ('nombre',)
-    list_editable = ('precio', 'disponibilidad')
+    list_filter = ('disponibilidad', 'categoria')
+    filter_horizontal = ('impuestos',)  # ✅ Permite agregar y quitar impuestos en el admin
