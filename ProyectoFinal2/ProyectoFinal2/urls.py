@@ -19,7 +19,8 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from util import views
 from pedidos.views import detalle_pedido, ver_pokemon_pedido
-from facturacion.views import promociones_por_clima, vista_metodos_pago
+from facturacion.views import promociones_por_clima, vista_metodos_pago, lista_facturas, detalle_factura, \
+    descargar_factura_pdf
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,7 +30,8 @@ urlpatterns = [
     # 📌 Vistas del cliente
     path('cliente/', views.vista_cliente, name='vista_cliente'),
     path('cliente/pedidos/', views.vista_pedidos_cliente, name='vista_pedidos_cliente'),
-    path('cliente/metodos-pago/', vista_metodos_pago, name='vista_metodos_pago'),
+    path('cliente/metodos-pago/<int:factura_numero>/', vista_metodos_pago, name='vista_metodos_pago'),
+
     path('detalle/<int:pedido_numero>/', detalle_pedido, name='detalle_pedido'),
     path('pedido/<int:pedido_numero>/pokemon/', ver_pokemon_pedido, name='ver_pokemon_pedido'),
 
@@ -43,6 +45,10 @@ urlpatterns = [
 
     # Funcionalidades adicionales
     path('promociones/', promociones_por_clima, name='promociones'),
+    path('facturas/', lista_facturas, name='factura_lista'),
+    path('factura/<int:factura_numero>/', detalle_factura, name='factura_detalle'),
+    path('factura/<int:factura_numero>/descargar/', descargar_factura_pdf, name='descargar_factura_pdf'),
+
 ]
 
 

@@ -19,7 +19,7 @@
                     <a href="{% url 'vista_cliente' %}" class="btn btn-warning btn-lg">
                         🍽 Ir al Panel de Cliente
                     </a>
-                {% elif user.es_empleado %}
+                {% elif user.es_mesero or user .es_cocinero %}
                     <a href="{% url 'vista_empleado' %}" class="btn btn-success btn-lg">
                         👨‍🍳 Ir al Panel de Empleado
                     </a>

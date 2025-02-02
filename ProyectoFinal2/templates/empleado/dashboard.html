@@ -7,7 +7,16 @@
 
 {% block content %}
     <div class="container text-center mt-5">
-        <h1 class="mb-4">🧑‍🍳 Bienvenido, Empleado</h1>
+        <h1 class="mb-4">
+            {% if user.es_mesero %}
+                🏷 Bienvenido, Mesero {{ user.mesero.nombre }}
+            {% elif user.es_cocinero %}
+                🍳 Bienvenido, Cocinero {{ user.personal_cocina.nombre }}
+            {% else %}
+                🧑‍🍳 Bienvenido, Empleado
+            {% endif %}
+        </h1>
+
 
         <div class="alert alert-success">
             Accede a la gestión de pedidos y control de cocina.

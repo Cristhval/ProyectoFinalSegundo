@@ -7,7 +7,7 @@
 
 {% block content %}
     <div class="container text-center mt-5">
-        <h1 class="mb-4">🍔 Bienvenido, Cliente</h1>
+        <h1 class="mb-4">🍔 Bienvenido, {{ request.user.cliente.nombre|default:"Usuario" }}</h1>
 
         <div class="alert alert-warning">
             Descubre nuestras promociones y ofertas exclusivas.
@@ -16,7 +16,7 @@
         <!-- 📌 Accesos rápidos para clientes -->
         <div class="row mt-4">
             <div class="col-md-4">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">📋 Mis Pedidos</h5>
                         <p class="card-text">Consulta tu historial de pedidos.</p>
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">🎉 Promociones</h5>
                         <p class="card-text">Aprovecha las ofertas según el clima.</p>
@@ -34,11 +34,29 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">💳 Métodos de Pago</h5>
                         <p class="card-text">Consulta tus métodos de pago y facturación.</p>
-                        <a href="{% url 'vista_metodos_pago' %}" class="btn btn-warning">Ver Pagos</a>
+
+                        {% if facturas %}
+                            <div class="dropdown">
+                                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Seleccionar Factura
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for factura in facturas %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'vista_metodos_pago' factura.numero %}">
+                                                Factura #{{ factura.numero }} - ${{ factura.total }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mt-2">No tienes facturas registradas.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -50,4 +68,3 @@
         </form>
     </div>
 {% endblock %}
-

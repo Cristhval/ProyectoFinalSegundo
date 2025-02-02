@@ -25,17 +25,20 @@ class CustomLogoutView(View):
 def vista_publica(request):
     return render(request, 'public_home.html')
 
-# Vista para el cliente
+# Vista para el cliente con facturas incluidas en el contexto
 @login_required
 def vista_cliente(request):
     if request.user.es_cliente():
-        return render(request, 'cliente/dashboard.html')
+        cliente = request.user.cliente
+        facturas = Factura.objects.filter(pedido__cliente=cliente).order_by('-fecha')
+        return render(request, 'cliente/dashboard.html', {"facturas": facturas})
     return redirect('login')
+
 
 # Vista para el empleado (mesero, personal de cocina)
 @login_required
 def vista_empleado(request):
-    if request.user.es_empleado():
+    if request.user.tipo_usuario in ['Mesero', 'Cocinero']:  # 🔹 Verificamos el tipo correctamente
         return render(request, 'empleado/dashboard.html')
     return redirect('login')
 
@@ -57,16 +60,17 @@ def vista_admin(request):
 def home(request):
     user = request.user
 
-    # Redirigir según el tipo de usuario
+    # 🔹 Corregimos la lógica de redirección
     if user.tipo_usuario == 'Cliente':
         return redirect(reverse('vista_cliente'))
-    elif user.tipo_usuario == 'Empleado':
+    elif user.tipo_usuario == 'Mesero' or user.tipo_usuario == 'Cocinero':  # 🔹 Corregido
         return redirect(reverse('vista_empleado'))
     elif user.tipo_usuario == 'Administrador':
         return redirect(reverse('vista_admin'))
 
     # Si el usuario no tiene tipo definido, enviarlo a la página pública
     return redirect(reverse('public_home'))
+
 
 @login_required
 def vista_pedidos_cliente(request):
