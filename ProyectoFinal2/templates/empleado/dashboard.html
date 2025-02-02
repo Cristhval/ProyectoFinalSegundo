@@ -17,14 +17,85 @@
             {% endif %}
         </h1>
 
-
         <div class="alert alert-success">
-            Accede a la gestión de pedidos y control de cocina.
+            {% if user.es_mesero %}
+                Gestiona pedidos, mesas y facturación.
+            {% elif user.es_cocinero %}
+                Administra pedidos en preparación y revisa el inventario.
+            {% endif %}
         </div>
 
-        <form action="{% url 'logout' %}" method="post" class="mt-3">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-        </form>
+        <!-- 📌 Accesos rápidos -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 Menú</h5>
+                        <p class="card-text">Consulta los productos disponibles y sus categorías.</p>
+                        <a href="{% url 'ver_menu' %}" class="btn btn-primary">Ver Menú</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📦 Inventario</h5>
+                        <p class="card-text">Revisa los ingredientes disponibles.</p>
+                        <a href="{% url 'vista_inventario' %}" class="btn btn-info">Ver Inventario</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">🪑 Mesas</h5>
+                        <p class="card-text">Consulta el estado y disponibilidad de las mesas.</p>
+                        <a href="{% url 'vista_mesas' %}" class="btn btn-warning">Ver Mesas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📌 Pedidos</h5>
+                        <p class="card-text">Revisa los pedidos actuales y sus estados.</p>
+                        <a href="{% url 'ver_pedidos' %}" class="btn btn-success">Ver Pedidos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📌 Funciones del mesero -->
+        {% if user.es_mesero %}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">🛎 Tomar Pedido</h5>
+                        <p class="card-text">Registra un nuevo pedido para un cliente.</p>
+                        <a href="{% url 'crear_pedido' %}" class="btn btn-success">Nuevo Pedido</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">🧾 Crear Factura</h5>
+                        <p class="card-text">Genera una factura para un pedido.</p>
+                        <a href="{% url 'crear_factura' %}" class="btn btn-danger">Nueva Factura</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 📌 Botón de Cerrar Sesión -->
+        <div class="text-center mt-5">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-dark btn-lg">Cerrar sesión</button>
+            </form>
+        </div>
     </div>
 {% endblock %}
+

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Estado de las Mesas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">🪑 Estado de las Mesas</h1>
+
+    <div class="row justify-content-center">
+        {% for mesa in mesas %}
+        <div class="col-md-4">
+            <div class="card shadow-lg mb-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mesa #{{ mesa.identificador }}</h5>
+                    <p class="card-text"><strong>Capacidad:</strong> {{ mesa.numero_asientos }} asientos</p>
+                    <p class="card-text"><strong>Ubicación:</strong> {{ mesa.ubicacion }}</p>
+                    <p class="card-text">
+                        <strong>Estado:</strong>
+                        {% if mesa.estado == "LIBRE" %}
+                            <span class="badge bg-success">✅ Libre</span>
+                        {% elif mesa.estado == "OCUPADA" %}
+                            <span class="badge bg-danger">❌ Ocupada</span>
+                        {% elif mesa.estado == "RESERVADA" %}
+                            <span class="badge bg-warning">🟡 Reservada</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No hay mesas registradas.</p>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'vista_empleado' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+{% endblock %}

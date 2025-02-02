@@ -1,13 +1,16 @@
 import requests
-from django.shortcuts import render, get_object_or_404
-from .models import Promocion
+from django.db import transaction
+from django.shortcuts import render, get_object_or_404, redirect
+
+from pedidos.models import Pedido
+from .models import Promocion, ItemFactura
 from django.contrib import messages
 from facturacion.models import Factura, PagoEfectivo, PagoTarjeta, PagoTransferencia
 from util.models import Cliente
 from django.contrib.auth.decorators import login_required
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 import io
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
@@ -167,3 +170,46 @@ def descargar_factura_pdf(request, factura_numero):
     response = HttpResponse(buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="Factura_{factura.numero}.pdf"'
     return response
+
+
+@login_required
+def crear_factura(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        pedido = get_object_or_404(Pedido, numero=pedido_id)  # Usar 'numero', no 'id'
+        promociones_seleccionadas = request.POST.getlist("promociones")
+
+        # 🔹 Crear y GUARDAR la factura ANTES de asignar relaciones
+        factura = Factura.objects.create(pedido=pedido)
+
+        # 🔹 Asignar ítems del pedido a la factura (NO acceder a relaciones antes de guardar)
+        for item_pedido in pedido.items.all():
+            ItemFactura.objects.create(
+                factura=factura,
+                item_pedido=item_pedido,
+                cantidad=item_pedido.cantidad
+            )
+
+        # 🔹 Guardar la factura para asegurarnos de que tiene una clave primaria asignada
+        factura.save()
+
+        # 🔹 Asignar promociones a la factura (Después de guardar)
+        for promo_id in promociones_seleccionadas:
+            promo = get_object_or_404(Promocion, id=promo_id)
+            factura.promociones.add(promo)
+
+        # 🔹 Calcular montos finales
+        factura.calcular_monto_total()
+        factura.save()
+
+        messages.success(request, "Factura creada exitosamente.")
+        return redirect("factura_detalle", factura_numero=factura.numero)
+
+    # 🔹 Obtener los pedidos pendientes y promociones activas
+    pedidos = Pedido.objects.filter(estado="PENDIENTE")
+    promociones = Promocion.objects.filter(activa=True)
+
+    return render(request, "facturacion/crear_factura.html", {
+        "pedidos": pedidos,
+        "promociones": promociones
+    })
