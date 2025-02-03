@@ -105,10 +105,10 @@ La GUI ha sido diseñada para permitir a los usuarios interactuar de manera senc
 - Implementación de diseño responsivo para diferentes tamaños de pantalla.
 
 ## Criterios de Evaluación
-- **Diseño adecuado:** La interfaz debe ser intuitiva, bien organizada y con un diseño atractivo.
-- **Conectividad con el backend:** Debe permitir la comunicación con las clases implementadas previamente.
+- **Diseño adecuado:** La interfaz es intuitiva, bien organizada y con un diseño atractivo.
+- **Conectividad con el backend:** Permite la comunicación con las clases implementadas previamente.
 - **Funcionalidad completa:** Soporte para CRUD (Crear, Leer, Actualizar, Eliminar).
-- **Calidad estética y usabilidad:** La interfaz debe seguir buenas prácticas de UX/UI, asegurando que el usuario pueda utilizarla sin dificultades.
+- **Calidad estética y usabilidad:** La interfaz sigue buenas prácticas de UX/UI, asegurando que el usuario pueda utilizarla sin dificultades.
 
 ---
 # Integración con una Base de Datos y Operaciones CRUD
@@ -117,7 +117,7 @@ La GUI ha sido diseñada para permitir a los usuarios interactuar de manera senc
 La aplicación está conectada a una base de datos que permite gestionar la información mediante operaciones CRUD. La integración se realiza mediante consultas seguras para garantizar la consistencia y seguridad de los datos.
 
 ## Características
-- Configuración de base de datos SQL (MySQL, SQLite, PostgreSQL, etc.).
+- Configuración de base de datos: SQLite
 - Creación y gestión de tablas necesarias para la aplicación.
 - Implementación de consultas parametrizadas para evitar inyección SQL.
 - Manejo de errores y transacciones para garantizar la integridad de los datos.
@@ -125,7 +125,7 @@ La aplicación está conectada a una base de datos que permite gestionar la info
 
 ## Criterios de Evaluación
 - **Configuración correcta de la base de datos:** Definición adecuada de tablas y relaciones.
-- **Funcionalidad CRUD:** La interfaz debe permitir realizar todas las operaciones de gestión de datos sin fallos.
+- **Funcionalidad CRUD:** La interfaz permite realizar todas las operaciones de gestión de datos.
 - **Seguridad:** Implementación de medidas de protección, como autenticación y autorización para evitar accesos no autorizados.
 - **Eficiencia:** Consultas optimizadas para garantizar tiempos de respuesta rápidos.
 
@@ -142,7 +142,16 @@ Se ha integrado una API externa o una librería estándar para mejorar las funci
 - Manejo de errores y optimización de llamadas a la API para evitar tiempos de respuesta largos.
 
 ## Criterios de Evaluación
-- **Integración correcta de la API o librería:** Debe mejorar la funcionalidad sin afectar el rendimiento ni la estabilidad.
+- **Integración correcta de la API o librería:** Mejora la funcionalidad sin afectar el rendimiento ni la estabilidad.
 - **Claridad en la documentación:** Explicación detallada sobre el uso de la API, incluyendo ejemplos de código.
-- **Eficiencia:** La API o librería debe ser utilizada de manera eficiente, evitando cargas innecesarias en la aplicación.
+- **Eficiencia:** La API o librería es utilizada de manera eficiente, evitando cargas innecesarias en la aplicación.
 - **Manejo de errores:** Implementación de validaciones para prevenir fallos en caso de errores en la API.
+
+# Capturas realizadas del proyecto
+![img_4.jpg](img_4.jpg)
+![img_5.jpg](img_5.jpg)
+![img_6.jpg](img_6.jpg)
+![img_7.jpg](img_7.jpg)
+![img_8.jpg](img_8.jpg)
+![img_9.jpg](img_9.jpg)
+![img_10.jpg](img_10.jpg)
