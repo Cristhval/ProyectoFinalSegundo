@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Pedido #{{ pedido.numero }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">✏ Editar Pedido #{{ pedido.numero }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- 🔹 Estado del Pedido -->
+        <div class="form-group">
+            <label for="estado"><strong>Estado del Pedido</strong></label>
+            <select name="estado" id="estado" class="form-control">
+                {% for estado, nombre_estado in EstadoPedido.choices %}
+                    <option value="{{ estado }}" {% if pedido.estado == estado %}selected{% endif %}>{{ nombre_estado }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 🔹 Productos en el Pedido -->
+        <div class="form-group mt-3">
+            <label><strong>Productos en el Pedido</strong></label>
+            <table class="table table-bordered mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Eliminar</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pedido.items.all %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="eliminar_productos" value="{{ item.producto.id }}" class="form-check-input">
+                        </td>
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>${{ item.producto.precio }}</td>
+                        <td>
+                            <input type="number" name="cantidad_{{ item.producto.id }}" class="form-control" min="1" value="{{ item.cantidad }}">
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No hay productos en este pedido.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 🔹 Agregar Nuevos Productos -->
+        <div class="form-group mt-3">
+            <label><strong>Agregar Nuevos Productos</strong></label>
+            <table class="table table-bordered mt-3">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Seleccionar</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>
+                            <input class="form-check-input product-checkbox" type="checkbox" name="nuevos_productos" value="{{ producto.id }}">
+                        </td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>
+                            <input type="number" name="cantidad_nuevo_{{ producto.id }}" class="form-control cantidad-input" min="1" value="1" disabled>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No hay productos disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-4">💾 Guardar Cambios</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'lista_pedidos' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+
+<script>
+    // Habilitar cantidad solo si el checkbox está seleccionado
+    document.querySelectorAll(".product-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            let cantidadInput = this.closest("tr").querySelector(".cantidad-input");
+            cantidadInput.disabled = !this.checked;
+        });
+    });
+</script>
+{% endblock %}

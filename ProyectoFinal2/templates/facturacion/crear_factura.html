@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Crear Factura{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">🧾 Crear Nueva Factura</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'crear_factura' %}">
+        {% csrf_token %}
+
+        <!-- Cliente -->
+        <div class="form-group">
+            <label for="cliente"><strong>Cliente:</strong></label>
+            <input type="text" id="cliente" class="form-control" value="(Autocompletado)" readonly>
+        </div>
+
+        <!-- Número de Factura -->
+        <div class="form-group">
+            <label for="numero_factura"><strong>Número de Factura:</strong></label>
+            <input type="text" id="numero_factura" class="form-control" value="(Autogenerado)" readonly>
+        </div>
+
+        <!-- Seleccionar Pedido -->
+        <div class="form-group">
+            <label for="pedido"><strong>Seleccionar Pedido:</strong></label>
+            <select name="pedido_id" id="pedido" class="form-control" required>
+                <option value="">Seleccione un Pedido</option>
+                {% for pedido in pedidos %}
+                    <option value="{{ pedido.numero }}" data-cliente="{{ pedido.cliente.nombre }}">Pedido #{{ pedido.numero }} - Cliente: {{ pedido.cliente.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Productos del Pedido -->
+        <div class="form-group mt-3">
+            <label><strong>Productos del Pedido:</strong></label>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Promoción</th>
+                    </tr>
+                </thead>
+                <tbody id="productos_lista">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Seleccionar Promociones Generales -->
+        <div class="form-group mt-3">
+            <label><strong>Seleccionar Promociones Generales:</strong> (Opcional)</label>
+            <div class="row">
+                {% for promo in promociones %}
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="promociones" value="{{ promo.id }}" id="promo_{{ promo.id }}">
+                        <label class="form-check-label" for="promo_{{ promo.id }}">
+                            <strong>{{ promo.descripcion }}</strong> - Descuento: {{ promo.porcentaje_descuento }}%
+                        </label>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No hay promociones disponibles.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-4">📄 Generar Factura</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'factura_lista' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('pedido').addEventListener('change', function() {
+        var selectedPedido = this.value;
+        var clienteField = document.getElementById('cliente');
+        var productosLista = document.getElementById('productos_lista');
+        productosLista.innerHTML = "";
+
+        if (selectedPedido) {
+            var clienteNombre = this.options[this.selectedIndex].getAttribute('data-cliente');
+            clienteField.value = clienteNombre;
+
+            fetch(`/api/pedido/${selectedPedido}/productos/`)
+                .then(response => response.json())
+                .then(data => {
+                    data.productos.forEach(producto => {
+                        productosLista.innerHTML += `
+                            <tr>
+                                <td>${producto.nombre}</td>
+                                <td>$${producto.precio.toFixed(2)}</td>
+                                <td>${producto.cantidad}</td>
+                                <td>$${(producto.precio * producto.cantidad).toFixed(2)}</td>
+                                <td>${producto.promocion ? producto.promocion + '%' : 'No aplica'}</td>
+                            </tr>`;
+                    });
+                });
+        }
+    });
+</script>
+
+{% endblock %}

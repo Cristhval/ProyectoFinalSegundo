@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Estado del Inventario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center"><i class="fas fa-box"></i> Estado del Inventario</h1>
+
+    <table class="table table-bordered mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Ingrediente</th>
+                <th>Cantidad Disponible</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for insumo in insumos %}
+            <tr>
+                <td>{{ insumo.nombre }}</td>
+                <td>{{ insumo.cantidadDisponible }}</td>
+                <td class="{% if insumo.cantidadDisponible > 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if insumo.cantidadDisponible > 0 %}
+                        ✅ Disponible
+                    {% else %}
+                        ❌ Agotado
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No hay insumos registrados en el inventario.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'vista_empleado' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+{% endblock %}

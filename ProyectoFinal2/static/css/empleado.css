@@ -1,0 +1,24 @@
+/* empleado.css */
+body {
+    background-color: #f8f9fa; /* Fondo gris claro */
+    color: #212529;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #17a2b8; /* Azul Celeste */
+}
+
+button {
+    background-color: #17a2b8; /* Azul Celeste */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #138496;
+}

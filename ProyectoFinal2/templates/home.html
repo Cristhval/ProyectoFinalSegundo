@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio | Fast Food Express{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h1 class="fw-bold text-warning">🚀 ¡Bienvenido al Sistema! 🚀</h1>
+
+        {% if user.is_authenticated %}
+            <p class="mt-3">Hola, <strong>{{ user.username }}</strong>!</p>
+
+            <div class="user-options mt-4">
+                {% if user.es_cliente %}
+                    <a href="{% url 'vista_cliente' %}" class="btn btn-warning btn-lg">
+                        🍽 Ir al Panel de Cliente
+                    </a>
+                {% elif user.es_mesero or user .es_cocinero %}
+                    <a href="{% url 'vista_empleado' %}" class="btn btn-success btn-lg">
+                        👨‍🍳 Ir al Panel de Empleado
+                    </a>
+                {% elif user.es_admin %}
+                    <a href="{% url 'vista_admin' %}" class="btn btn-danger btn-lg">
+                        🔧 Ir al Panel de Administrador
+                    </a>
+                {% endif %}
+            </div>
+
+            <br>
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-lg mt-3">
+                    🔑 Cerrar sesión
+                </button>
+            </form>
+
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-4">
+                🔐 Iniciar sesión
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,38 @@
+/* cliente.css */
+body {
+    background-color: #fff5e6; /* Fondo Beige */
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #e67e22; /* Naranja */
+}
+
+/* 📌 Estilo para las tarjetas de accesos rápidos */
+.card {
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* 📌 Estilo para los botones */
+button, .btn {
+    background-color: #e67e22; /* Naranja */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+button:hover, .btn:hover {
+    background-color: #d35400;
+}

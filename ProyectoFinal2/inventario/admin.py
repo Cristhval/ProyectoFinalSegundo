@@ -1,54 +1,50 @@
 from django.contrib import admin
-from .models import (
-    Insumo, Operacion, Historial, Alerta, ReporteConsumo,
-    Inventario, ReporteBodega
-)
+from .models import Insumo, Operacion, Historial, Alerta, ReporteConsumo, Inventario, ReporteBodega
 
-# Configuración de Insumos en Admin
+# --- CONFIGURACIÓN PARA INSUMO ---
 @admin.register(Insumo)
 class InsumoAdmin(admin.ModelAdmin):
-    list_display = ('identificador', 'nombre', 'cantidadDisponible', 'unidadMedida', 'nivelReorden', 'precioUnitario', 'ubicacion')
-    search_fields = ('nombre', 'identificador')
-    list_filter = ('unidadMedida',)
-    ordering = ('nombre',)
+    list_display = ('identificador', 'nombre', 'cantidadDisponible', 'unidadMedida', 'nivelReorden', 'ubicacion')
+    search_fields = ('identificador', 'nombre')
+    list_filter = ('unidadMedida', 'ubicacion')
+    ordering = ('identificador',)
 
-# Configuración de Operaciones de Inventario en Admin
+# --- CONFIGURACIÓN PARA OPERACION ---
 @admin.register(Operacion)
 class OperacionAdmin(admin.ModelAdmin):
-    list_display = ('tipo', 'insumo', 'cantidad', 'fechaRegistro', 'observaciones')
+    list_display = ('tipo', 'insumo', 'cantidad', 'fechaRegistro')
     list_filter = ('tipo', 'fechaRegistro')
     search_fields = ('insumo__nombre',)
     ordering = ('-fechaRegistro',)
 
-# Configuración del Historial de Inventario en Admin
+# --- CONFIGURACIÓN PARA HISTORIAL ---
 @admin.register(Historial)
 class HistorialAdmin(admin.ModelAdmin):
     list_display = ('operacion', 'descripcion')
     search_fields = ('operacion__insumo__nombre',)
-    ordering = ('operacion__fechaRegistro',)
 
-# Configuración de Alertas en Admin
+# --- CONFIGURACIÓN PARA ALERTA ---
 @admin.register(Alerta)
 class AlertaAdmin(admin.ModelAdmin):
-    list_display = ('mensaje', 'fecha', 'tipo')
+    list_display = ('tipo', 'mensaje', 'fecha')
     list_filter = ('tipo', 'fecha')
     search_fields = ('mensaje',)
 
-# Configuración de Reportes de Consumo en Admin
+# --- CONFIGURACIÓN PARA REPORTE CONSUMO ---
 @admin.register(ReporteConsumo)
 class ReporteConsumoAdmin(admin.ModelAdmin):
-    list_display = ('periodoInicio', 'periodoFin', 'datos')
+    list_display = ('periodoInicio', 'periodoFin')
     search_fields = ('periodoInicio', 'periodoFin')
     ordering = ('-periodoInicio',)
 
-# Configuración del Inventario en Admin
+# --- CONFIGURACIÓN PARA INVENTARIO ---
 @admin.register(Inventario)
 class InventarioAdmin(admin.ModelAdmin):
     list_display = ('almacenamiento',)
     search_fields = ('almacenamiento',)
 
-# Configuración de Reportes de Bodega en Admin
+# --- CONFIGURACIÓN PARA REPORTE BODEGA ---
 @admin.register(ReporteBodega)
 class ReporteBodegaAdmin(admin.ModelAdmin):
-    list_display = ('tipo', 'datos')
+    list_display = ('tipo',)
     search_fields = ('tipo',)

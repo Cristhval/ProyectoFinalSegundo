@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">👨‍💼 Panel de Administrador</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="card bg-pedidos shadow p-4">
+                    <p>📦 <strong>Pedidos Totales</strong></p>
+                    <h2>{{ total_pedidos }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-clientes shadow p-4">
+                    <p>👥 <strong>Clientes Registrados</strong></p>
+                    <h2>{{ total_clientes }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-promociones shadow p-4">
+                    <p>🎉 <strong>Promociones Activas</strong></p>
+                    <h2>{{ total_promociones }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-facturas shadow p-4">
+                    <p>💰 <strong>Facturas Generadas</strong></p>
+                    <h2>{{ total_facturas }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <a href="{% url 'admin:util_usuariopersonalizado_add' %}" class="btn btn-primary btn-lg shadow-lg w-100">➕ Crear Empleado</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'dashboard-estadisticas' %}" class="btn btn-secondary btn-lg shadow-lg w-100">📊 Ver Estadísticas</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'admin:facturacion_promocion_changelist' %}" class="btn btn-warning btn-lg shadow-lg w-100">🎯 Gestionar Promociones</a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-4">
+                <a href="{% url 'admin:menus_producto_changelist' %}" class="btn btn-success btn-lg shadow-lg w-100">🍔 Administrar Productos</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'admin:util_impuesto_changelist' %}" class="btn btn-danger btn-lg shadow-lg w-100">⚖️ Manejar Impuestos</a>
+            </div>
+        </div>
+
+        <form action="{% url 'logout' %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-dark btn-lg shadow-lg">Cerrar sesión</button>
+        </form>
+    </div>
+{% endblock %}

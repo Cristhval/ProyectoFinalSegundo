@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import pymysql
 
+pymysql.install_as_MySQLdb()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,13 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'util.apps.UtilConfig',
-    'pedidos.apps.PedidosConfig',
-    'facturacion.apps.FacturacionConfig',
-    'mesas.apps.MesasConfig',
-    'menus.apps.MenusConfig',
-    'estadisticas.apps.EstadisticasConfig',
-    'inventario.apps.InventarioConfig'
+
+    'pedidos',
+    'facturacion',
+    'mesas',
+    'menus',
+    'estadisticas',
+    'inventario',
+    'util',
 ]
 
 MIDDLEWARE = [
@@ -124,8 +129,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'util.UsuarioPersonalizado'
+
+
+# Configuración de redirección después del login
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'public_home'
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

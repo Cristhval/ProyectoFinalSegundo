@@ -1,33 +1,12 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from abc import ABC, abstractmethod
-from util.models import Administrador, Proveedor, Usuario
+from django.utils import timezone
+from util.models import Administrador, Proveedor
 from pedidos.models import Pedido
 from menus.models import Producto
 
-# Interfaz para la gestión de inventario
-class GestionInventario(ABC):
-    @abstractmethod
-    def agregar_item(self, item):
-        """Agregar un nuevo ítem al inventario."""
-        pass
-
-    @abstractmethod
-    def eliminar_item(self, item):
-        """Eliminar un ítem del inventario."""
-        pass
-
-    @abstractmethod
-    def buscar_items(self):
-        """Listar todos los ítems en el inventario."""
-        pass
-
-    @abstractmethod
-    def actualizar(self):
-        pass
-
-# Modelo de insumos
+# --- MODELO INSUMO ---
 class Insumo(models.Model):
     identificador = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=50)
@@ -45,11 +24,11 @@ class Insumo(models.Model):
         if self.cantidadDisponible < self.nivelReorden:
             Alerta.objects.create(
                 mensaje=f"Insumo '{self.nombre}' bajo el nivel de reorden, reabastezca.",
-                fecha=models.DateTimeField.now(),
+                fecha=timezone.now(),
                 tipo='bajo_stock'
             )
 
-# Modelo de operación de inventario
+# --- MODELO OPERACION ---
 class Operacion(models.Model):
     TIPO_OPERACION_CHOICES = [
         ('entrada', 'Entrada'),
@@ -62,17 +41,17 @@ class Operacion(models.Model):
     observaciones = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Operación {self.tipo} - {self.insumo.nombre} ({self.cantidad} {self.insumo.unidadMedida})"
+        return f"{self.tipo.capitalize()} - {self.insumo.nombre} ({self.cantidad} {self.insumo.unidadMedida})"
 
-# Modelo de historial de inventario
+# --- MODELO HISTORIAL ---
 class Historial(models.Model):
-    operacion = models.OneToOneField(Operacion, on_delete=models.CASCADE)
+    operacion = models.OneToOneField(Operacion, on_delete=models.CASCADE, related_name="historial")
     descripcion = models.TextField()
 
     def __str__(self):
-        return f"Registro del {self.operacion.fechaRegistro}"
+        return f"Historial de {self.operacion}"
 
-# Modelo de alertas
+# --- MODELO ALERTA ---
 class Alerta(models.Model):
     mensaje = models.CharField(max_length=255)
     fecha = models.DateTimeField(auto_now_add=True)
@@ -83,9 +62,9 @@ class Alerta(models.Model):
     tipo = models.CharField(max_length=50, choices=TIPO_ALERTA_CHOICES)
 
     def __str__(self):
-        return f"Alerta: {self.tipo} - {self.mensaje} ({self.fecha})"
+        return f"[{self.tipo.upper()}] {self.mensaje} ({self.fecha.strftime('%d-%m-%Y %H:%M')})"
 
-# Modelo de reporte de consumo
+# --- MODELO REPORTE CONSUMO ---
 class ReporteConsumo(models.Model):
     periodoInicio = models.DateField()
     periodoFin = models.DateField()
@@ -95,7 +74,8 @@ class ReporteConsumo(models.Model):
         """Generar un reporte con los insumos más utilizados."""
         operaciones = Operacion.objects.filter(
             tipo='salida',
-            fechaRegistro__range=(self.periodoInicio, self.periodoFin)
+            fechaRegistro__gte=self.periodoInicio,
+            fechaRegistro__lte=self.periodoFin
         ).values('insumo__nombre').annotate(total=models.Sum('cantidad')).order_by('-total')
 
         reporte = "\n".join([f"{op['insumo__nombre']}: {op['total']} unidades" for op in operaciones])
@@ -104,16 +84,16 @@ class ReporteConsumo(models.Model):
         return reporte
 
     def __str__(self):
-        return f"Reporte de consumo ({self.periodoInicio} a {self.periodoFin})"
+        return f"Reporte de consumo ({self.periodoInicio} - {self.periodoFin})"
 
-# Modelo de inventario
+# --- MODELO INVENTARIO ---
 class Inventario(models.Model):
     almacenamiento = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.almacenamiento
+        return f"Inventario en {self.almacenamiento}"
 
-# Modelo de reportes de bodega
+# --- MODELO REPORTE BODEGA ---
 class ReporteBodega(models.Model):
     tipo = models.CharField(max_length=100)
     datos = models.TextField()
@@ -127,7 +107,7 @@ class ReporteBodega(models.Model):
     def __str__(self):
         return f"Reporte de bodega ({self.tipo})"
 
-# Actualización automática del inventario tras una operación
+# --- ACTUALIZACIÓN AUTOMÁTICA DEL INVENTARIO ---
 @receiver(post_save, sender=Operacion)
 def actualizar_inventario(sender, instance, **kwargs):
     """Actualizar la cantidad disponible en los insumos con cada operación de inventario."""
@@ -139,9 +119,9 @@ def actualizar_inventario(sender, instance, **kwargs):
     insumo.save()
 
     # Registrar en el historial
-    Historial.objects.create(
+    historial, created = Historial.objects.get_or_create(
         operacion=instance,
-        descripcion=f"Se realizó una operación de tipo {instance.tipo} con {instance.cantidad} de '{insumo.nombre}'."
+        defaults={'descripcion': f"Se realizó una operación de {instance.tipo} con {instance.cantidad} de '{insumo.nombre}'."}
     )
 
     # Verificar niveles de reorden después de actualizar el inventario

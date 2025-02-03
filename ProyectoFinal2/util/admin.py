@@ -1,57 +1,64 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import path, reverse
 from .models import (
-    Cliente, Mesero, PersonalCocina, Administrador, Proveedor, Usuario, Impuesto
+    UsuarioPersonalizado, Cliente, Mesero, PersonalCocina, Administrador,
+    Proveedor, Impuesto
 )
 
-# Configuración de Cliente en Admin
+# --- CONFIGURACIÓN DEL ADMIN DE USUARIO PERSONALIZADO ---
+@admin.register(UsuarioPersonalizado)
+class UsuarioPersonalizadoAdmin(UserAdmin):
+    list_display = ('username', 'tipo_usuario', 'is_active', 'is_staff')
+    list_filter = ('tipo_usuario', 'is_staff', 'is_active')
+    search_fields = ('username', 'email')
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Información Personal', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Tipo de Usuario', {'fields': ('tipo_usuario', 'cliente', 'mesero', 'personal_cocina', 'administrador')}),
+        ('Permisos', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Fechas Importantes', {'fields': ('last_login', 'date_joined')}),
+    )
+
+# --- CONFIGURACIÓN PARA CLIENTE ---
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'email', 'activo')
     search_fields = ('nombre', 'apellido', 'cedula')
     list_filter = ('activo',)
-    ordering = ('apellido',)
-    filter_horizontal = ('historial_pedidos',)  # Para mejor gestión de pedidos
 
-# Configuración de Mesero en Admin
+# --- CONFIGURACIÓN PARA MESERO ---
 @admin.register(Mesero)
 class MeseroAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'identificacion', 'esta_ocupado', 'pedidos_atendidos')
-    search_fields = ('nombre', 'apellido', 'cedula', 'identificacion')
-    list_filter = ('esta_ocupado',)
-    ordering = ('apellido',)
+    list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'rol', 'esta_ocupado', 'pedidos_atendidos')
+    search_fields = ('nombre', 'apellido', 'cedula')
+    list_filter = ('rol', 'esta_ocupado')
 
-# Configuración de PersonalCocina en Admin
+# --- CONFIGURACIÓN PARA PERSONAL DE COCINA ---
 @admin.register(PersonalCocina)
 class PersonalCocinaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'identificacion', 'esta_cocinando')
-    search_fields = ('nombre', 'apellido', 'cedula', 'identificacion')
-    list_filter = ('esta_cocinando',)
-    ordering = ('apellido',)
+    list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'rol', 'esta_cocinando')
+    search_fields = ('nombre', 'apellido', 'cedula')
+    list_filter = ('rol', 'esta_cocinando')
 
-# Configuración de Administrador en Admin
+# --- CONFIGURACIÓN PARA ADMINISTRADOR ---
 @admin.register(Administrador)
 class AdministradorAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'cedula', 'rol')
+    list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'rol')
     search_fields = ('nombre', 'apellido', 'cedula')
-    ordering = ('apellido',)
+    list_filter = ('rol',)
 
-# Configuración de Proveedor en Admin
+# --- CONFIGURACIÓN PARA PROVEEDOR ---
 @admin.register(Proveedor)
 class ProveedorAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'contacto', 'email', 'direccion')
-    search_fields = ('nombre', 'contacto', 'email')
-    ordering = ('nombre',)
+    list_display = ('nombre', 'email', 'direccion', 'telefono_contacto')
+    search_fields = ('nombre', 'email', 'telefono_contacto')
 
-# Configuración de Usuario en Admin
-@admin.register(Usuario)
-class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'rol', 'email')
-    search_fields = ('nombre', 'email')
-    ordering = ('nombre',)
-
-# Configuración de Impuesto en Admin
+# --- CONFIGURACIÓN PARA IMPUESTO ---
 @admin.register(Impuesto)
 class ImpuestoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'porcentaje', 'descripcion')
     search_fields = ('nombre',)
-    ordering = ('nombre',)
+

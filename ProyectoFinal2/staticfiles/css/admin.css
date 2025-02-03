@@ -1,0 +1,60 @@
+/* Estilos generales para el Dashboard Admin */
+body {
+    background-color: #f8f9fa; /* Fondo claro */
+    color: #212529;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ✅ Estilos para títulos */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #343a40; /* Gris oscuro */
+    font-size: 32px;
+    font-weight: bold;
+}
+
+/* ✅ Tarjetas para estadísticas */
+.card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* 🎨 Diferentes colores para cada tarjeta */
+.bg-pedidos { background-color: #007bff; } /* Azul */
+.bg-clientes { background-color: #28a745; } /* Verde */
+.bg-promociones { background-color: #ffc107; } /* Amarillo */
+.bg-facturas { background-color: #dc3545; } /* Rojo */
+
+/* ✅ Animación cuando el usuario pasa el mouse */
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* ✅ Estilos de botones */
+.btn-lg {
+    font-size: 18px;
+    padding: 12px 24px;
+    border-radius: 5px;
+}
+
+/* ✅ Efecto hover en botones */
+.btn-lg:hover {
+    opacity: 0.9;
+}
+
+/* ✅ Separación entre filas */
+.row {
+    margin-bottom: 20px;
+}

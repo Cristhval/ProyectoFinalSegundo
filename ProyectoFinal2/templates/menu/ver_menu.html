@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menú{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📜 Menú del Restaurante</h1>
+
+    <div class="row justify-content-center">
+        {% for producto in productos %}
+        <div class="col-md-4">
+            <div class="card shadow-lg mb-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    <p class="card-text"><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
+                    <p class="card-text"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+
+                    {% if producto.disponibilidad %}
+                        <p class="text-success"><i class="fas fa-check-circle"></i> Disponible</p>
+                    {% else %}
+                        <p class="text-danger"><i class="fas fa-times-circle"></i> Agotado</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No hay productos disponibles en este momento.</p>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'vista_empleado' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">👨‍💼 Panel de Administrador</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="card bg-pedidos shadow p-4">
+                    <p>📦 <strong>Pedidos Totales</strong></p>
+                    <h2>{{ total_pedidos }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-clientes shadow p-4">
+                    <p>👥 <strong>Clientes Registrados</strong></p>
+                    <h2>{{ total_clientes }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-promociones shadow p-4">
+                    <p>🎉 <strong>Promociones Activas</strong></p>
+                    <h2>{{ total_promociones }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-facturas shadow p-4">
+                    <p>💰 <strong>Facturas Generadas</strong></p>
+                    <h2>{{ total_facturas }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📊 Estadísticas -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-3">
+                <div class="card bg-info shadow p-4">
+                    <p>🏆 <strong>Mejor Mesero</strong></p>
+                    <h2>{{ mejor_mesero }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning shadow p-4">
+                    <p>🪑 <strong>Mesa Más Usada</strong></p>
+                    <h2>{{ mesa_mas_usada }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger shadow p-4">
+                    <p>🍟 <strong>Producto Más Vendido</strong></p>
+                    <h2>{{ producto_mas_vendido }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📈 Gráfico de Ventas -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <h3>📊 Ventas por Producto</h3>
+                {% if grafico_ventas %}
+                    <img src="data:image/png;base64,{{ grafico_ventas }}" class="img-fluid" alt="Gráfico de Ventas">
+                {% else %}
+                    <p>No hay datos de ventas disponibles.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
