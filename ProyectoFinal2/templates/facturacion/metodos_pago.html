@@ -25,6 +25,32 @@
         </div>
     </div>
 
+<h3 class="mt-4"><i class="fas fa-box"></i> Productos en la Factura</h3>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in factura.items.all %}
+                <tr>
+                    <td>{{ item.item_pedido.producto.nombre }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.item_pedido.producto.precio }}</td>
+                    <td>${{ item.subtotal }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No hay productos en esta factura.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <!-- Botón para descargar en PDF -->
     <div class="text-center mt-3">
         <a href="{% url 'descargar_factura_pdf' factura.numero %}" class="btn btn-danger btn-lg">

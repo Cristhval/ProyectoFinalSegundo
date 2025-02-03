@@ -98,7 +98,7 @@ def detalle_factura(request, factura_numero):
     factura = get_object_or_404(Factura, numero=factura_numero)
     items = ItemFactura.objects.filter(factura=factura)  # 🔹 Obtiene los productos de la factura
 
-    return render(request, "facturacion/detalle_factura.html", {
+    return render(request, "facturacion/factura_detalle.html", {
         "factura": factura,
         "items": items
     })
