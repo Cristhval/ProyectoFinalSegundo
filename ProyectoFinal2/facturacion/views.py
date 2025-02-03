@@ -94,16 +94,13 @@ def lista_facturas(request):
 
 @login_required
 def detalle_factura(request, factura_numero):
-    """Muestra el detalle de una factura específica."""
     factura = get_object_or_404(Factura, numero=factura_numero)
-    items = factura.items.all()  # ✅ Asegurar que los productos se envían a la plantilla
+    items = ItemFactura.objects.filter(factura=factura)  # 🔹 Obtiene los productos de la factura
 
-    return render(request, 'facturacion/factura_detalle.html', {
-        'factura': factura,
-        'items': items
+    return render(request, "facturacion/detalle_factura.html", {
+        "factura": factura,
+        "items": items
     })
-
-
 def descargar_factura_pdf(request, factura_numero):
     factura = get_object_or_404(Factura, numero=factura_numero)
     items = factura.items.all()

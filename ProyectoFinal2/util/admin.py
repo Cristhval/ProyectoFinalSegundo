@@ -1,5 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import path, reverse
 from .models import (
     UsuarioPersonalizado, Cliente, Mesero, PersonalCocina, Administrador,
     Proveedor, Impuesto
@@ -58,3 +61,4 @@ class ProveedorAdmin(admin.ModelAdmin):
 class ImpuestoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'porcentaje', 'descripcion')
     search_fields = ('nombre',)
+

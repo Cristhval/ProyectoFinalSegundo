@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registro de Cliente{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center text-primary">📝 Registro de Cliente</h2>
+        <p class="text-center text-muted">Crea una cuenta para realizar pedidos fácilmente.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Nombre de Usuario</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Correo Electrónico</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_nombre" class="form-label">Nombre</label>
+                            {{ form.nombre }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_apellido" class="form-label">Apellido</label>
+                            {{ form.apellido }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_telefono" class="form-label">Teléfono</label>
+                            {{ form.telefono }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Contraseña</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Confirmar Contraseña</label>
+                            {{ form.password2 }}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Registrarse</button>
+                    </form>
+                    <p class="mt-3 text-center">
+                        ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

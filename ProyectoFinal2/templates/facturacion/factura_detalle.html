@@ -13,7 +13,7 @@
         <div class="card-body">
             <h5 class="mb-3"><strong>Fecha:</strong> {{ factura.fecha|date:"Y-m-d" }} {{ factura.fecha|time:"H:i" }}</h5>
             <h5 class="mb-3"><strong>Cliente:</strong> {{ factura.pedido.cliente.nombre }}</h5>
-            <h5 class="mb-3"><strong>Total:</strong> <span class="text-success">${{ factura.total_a_pagar }}</span></h5>
+            <h5 class="mb-3"><strong>Total:</strong> <span class="text-success">${{ factura.total }}</span></h5>
             <h5 class="mb-3"><strong>Impuestos incluidos:</strong> <span class="text-muted">${{ factura.impuesto_total }}</span></h5>
             <h5><strong>Estado:</strong>
                 {% if factura.pedido.estado == "PAGADO" %}

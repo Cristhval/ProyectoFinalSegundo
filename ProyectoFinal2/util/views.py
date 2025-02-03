@@ -1,13 +1,17 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.views import View
 from pedidos.models import Pedido
+from util.forms import ClienteRegistroForm
 from util.models import Cliente
-from facturacion.models import Promocion, Factura
+from facturacion.models import Promocion, Factura, ItemFactura
+
 
 class CustomLoginView(LoginView):
     template_name = "registration/login.html"
@@ -31,9 +35,11 @@ def vista_cliente(request):
     if request.user.es_cliente():
         cliente = request.user.cliente
         facturas = Factura.objects.filter(pedido__cliente=cliente).order_by('-fecha')
-        return render(request, 'cliente/dashboard.html', {"facturas": facturas})
+        return render(request, 'cliente/dashboard.html', {
+            "usuario": request.user,   # 🔹 Pasamos el usuario al template
+            "facturas": facturas
+        })
     return redirect('login')
-
 
 # Vista para el empleado (mesero, personal de cocina)
 @login_required
@@ -82,3 +88,21 @@ def vista_pedidos_cliente(request):
         pedidos = []  # Asegurar que pedidos no sea None
 
     return render(request, 'cliente/pedidos.html', {'pedidos': pedidos})
+
+
+
+def registro_cliente(request):
+    if request.method == "POST":
+        form = ClienteRegistroForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.tipo_usuario = "Cliente"  # Asegurar que el usuario sea cliente
+            user.save()
+            grupo_cliente, created = Group.objects.get_or_create(name="Cliente")
+            user.groups.add(grupo_cliente)  # Agregar al grupo "Cliente"
+            login(request, user)  # Iniciar sesión después del registro
+            return redirect("home")  # Redirigir a la página principal
+    else:
+        form = ClienteRegistroForm()
+
+    return render(request, "registration/registro_cliente.html", {"form": form})

@@ -14,9 +14,14 @@
             <h1 class="fw-bold text-warning">🍔 ¡Bienvenido a FastFood Express! 🍟</h1>
             <p class="fs-5 text-light">Disfruta de nuestras deliciosas hamburguesas, papas fritas y combos irresistibles.</p>
 
-            <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+                <a href="{% url 'registro_cliente' %}" class="btn btn-success btn-lg ms-3">
+                    <i class="fas fa-user-plus"></i> Registrarse como Cliente
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}

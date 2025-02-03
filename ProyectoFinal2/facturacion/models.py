@@ -63,8 +63,17 @@ class Factura(models.Model):
         self.total = self.subtotal - self.descuento + self.impuesto_total
 
     def save(self, *args, **kwargs):
-        self.calcular_monto_total()
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)  # Guarda la factura antes de asignarle los items
+
+        # Verifica si la factura ya tiene items, si no, los crea
+        if not self.items.exists():
+            for item_pedido in self.pedido.items.all():
+                ItemFactura.objects.create(
+                    factura=self,
+                    item_pedido=item_pedido,
+                    cantidad=item_pedido.cantidad,  # Se usa la cantidad del ItemPedido
+                    subtotal=item_pedido.cantidad * item_pedido.producto.precio
+                )
 
     def total_a_pagar(self):
         return f"{self.total} (Impuestos incluidos: {self.impuesto_total})"

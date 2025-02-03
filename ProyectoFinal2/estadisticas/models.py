@@ -28,6 +28,9 @@ class Estadistica(models.Model):
 
     def calcular_mejor_mesero(self):
         facturas = Factura.objects.filter(fecha__range=[self.fecha_inicio, self.fecha_fin])
+        if not facturas.exists():
+            return "No hay datos"
+
         mesero_mas_activo = (
             facturas.values('pedido__mesero__nombre')
             .annotate(total_pedidos=Count('pedido'))
@@ -38,6 +41,9 @@ class Estadistica(models.Model):
 
     def calcular_mesa_mas_usada(self):
         facturas = Factura.objects.filter(fecha__range=[self.fecha_inicio, self.fecha_fin])
+        if not facturas.exists():
+            return "No hay datos"
+
         mesa_mas_usada = (
             facturas.values('pedido__mesa__identificador')
             .annotate(total=Count('pedido'))
@@ -48,6 +54,9 @@ class Estadistica(models.Model):
 
     def calcular_producto_mas_vendido(self):
         item_facturas = ItemFactura.objects.filter(factura__fecha__range=[self.fecha_inicio, self.fecha_fin])
+        if not item_facturas.exists():
+            return "No hay datos"
+
         producto_mas_vendido = (
             item_facturas.values('item_pedido__producto__nombre')
             .annotate(total_vendido=Sum('cantidad'))
@@ -57,9 +66,12 @@ class Estadistica(models.Model):
         return producto_mas_vendido['item_pedido__producto__nombre'] if producto_mas_vendido else "No hay datos"
 
     def save(self, *args, **kwargs):
-        self.mejor_mesero = self.calcular_mejor_mesero()
-        self.mesa_mas_usada = self.calcular_mesa_mas_usada()
-        self.producto_mas_vendido = self.calcular_producto_mas_vendido()
+        if not self.mejor_mesero:
+            self.mejor_mesero = self.calcular_mejor_mesero()
+        if not self.mesa_mas_usada:
+            self.mesa_mas_usada = self.calcular_mesa_mas_usada()
+        if not self.producto_mas_vendido:
+            self.producto_mas_vendido = self.calcular_producto_mas_vendido()
         super().save(*args, **kwargs)
 
 # --- MODELO REPORTE ---
@@ -77,7 +89,9 @@ class Reporte(models.Model):
         estadistica, created = Estadistica.objects.get_or_create(
             fecha_inicio=self.fecha_inicio, fecha_fin=self.fecha_fin
         )
-        return estadistica if not created else "No hay estadísticas disponibles."
+        if created:
+            estadistica.save()
+        return estadistica
 
     def __str__(self):
         return f"Reporte {self.titulo} - {self.tipo_reporte}"
@@ -92,7 +106,7 @@ class Grafico(models.Model):
         cantidades = [venta["total_vendido"] for venta in ventas]
 
         if not productos or not cantidades:
-            return "No hay datos suficientes para generar un gráfico."
+            return None
 
         matplotlib.use("Agg")
         fig, ax = plt.subplots(figsize=(6, 4))
@@ -112,3 +126,4 @@ class Grafico(models.Model):
 
     def __str__(self):
         return self.titulo
+

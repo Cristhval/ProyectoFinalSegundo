@@ -1,23 +1,7 @@
-"""
-URL configuration for ProyectoFinal2 project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-
 from inventario.views import vista_inventario
 from menus.views import ver_menu
 from mesas.views import vista_mesas
@@ -27,6 +11,8 @@ from facturacion.views import (
     promociones_por_clima, vista_metodos_pago, lista_facturas,
     detalle_factura, descargar_factura_pdf, crear_factura
 )
+from estadisticas.views import dashboard_estadisticas, exportar_estadisticas_pdf
+from util.views import registro_cliente
 
 urlpatterns = [
     # 🔹 Administración
@@ -71,6 +57,13 @@ urlpatterns = [
     path('pedidos/', lista_pedidos, name='lista_pedidos'),
     path('pedidos/editar/<int:pedido_numero>/', editar_pedido, name='editar_pedido'),
     path('pedidos/', ver_pedidos, name='ver_pedidos'),
+
+    # 📌 Estadísticas
+    path("estadisticas/", dashboard_estadisticas, name="dashboard-estadisticas"),
+    path('dashboard/', dashboard_estadisticas, name='dashboard_estadisticas'),
+    path('exportar/<str:fecha_inicio>/<str:fecha_fin>/', exportar_estadisticas_pdf, name='exportar_estadisticas_pdf'),
+    path("registro/", registro_cliente, name="registro_cliente"),
 ]
+
 
 
