@@ -15,6 +15,7 @@ import io
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
 from reportlab.lib import colors
+
 API_KEY = "961bd7eac250b1785c38e99bfe913eef"
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
