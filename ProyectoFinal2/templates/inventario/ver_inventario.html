@@ -5,13 +5,30 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center"><i class="fas fa-box"></i> Estado del Inventario</h1>
+    <h1 class="text-center"><i class="fas fa-box"></i> Estado del Inventario - Almacén</h1>
 
+    <!-- ⚠️ Alertas de Inventario -->
+    <h3 class="mt-4 text-danger"><i class="fas fa-exclamation-triangle"></i> Alertas de Inventario</h3>
+    <ul class="list-group">
+        {% for alerta in alertas %}
+            <li class="list-group-item list-group-item-warning">
+                ⚠️ {{ alerta.mensaje }} <span class="text-muted">({{ alerta.fecha }})</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">No hay alertas activas.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- 🛠 Tabla de Insumos con detalles adicionales -->
+    <h3 class="mt-4"><i class="fas fa-warehouse"></i> Detalles del Inventario</h3>
     <table class="table table-bordered mt-4">
         <thead class="table-dark">
             <tr>
                 <th>Ingrediente</th>
                 <th>Cantidad Disponible</th>
+                <th>Unidad</th>
+                <th>Nivel de Reorden</th>
+                <th>Ubicación</th>
                 <th>Estado</th>
             </tr>
         </thead>
@@ -20,22 +37,67 @@
             <tr>
                 <td>{{ insumo.nombre }}</td>
                 <td>{{ insumo.cantidadDisponible }}</td>
-                <td class="{% if insumo.cantidadDisponible > 0 %}text-success{% else %}text-danger{% endif %}">
-                    {% if insumo.cantidadDisponible > 0 %}
+                <td>{{ insumo.unidadMedida }}</td>
+                <td>{{ insumo.nivelReorden }}</td>
+                <td>{{ insumo.ubicacion }}</td>
+                <td class="{% if insumo.cantidadDisponible > insumo.nivelReorden %}text-success{% else %}text-warning{% endif %}">
+                    {% if insumo.cantidadDisponible > insumo.nivelReorden %}
                         ✅ Disponible
                     {% else %}
-                        ❌ Agotado
+                        ⚠️ Bajo Stock
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3" class="text-center text-muted">No hay insumos registrados en el inventario.</td>
+                <td colspan="6" class="text-center text-muted">No hay insumos registrados en el inventario.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
+    <!-- 🔄 Últimos Movimientos en Inventario -->
+    <h3 class="mt-4"><i class="fas fa-history"></i> Últimos Movimientos</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Insumo</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for operacion in operaciones %}
+            <tr>
+                <td>{{ operacion.fechaRegistro }}</td>
+                <td>{{ operacion.insumo.nombre }}</td>
+                <td>{% if operacion.tipo == "entrada" %}📥 Entrada{% else %}📤 Salida{% endif %}</td>
+                <td>{{ operacion.cantidad }}</td>
+                <td>{{ operacion.observaciones|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">No hay movimientos recientes.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 📊 Generar Reportes -->
+    <h3 class="mt-4"><i class="fas fa-file-alt"></i> Generar Reportes</h3>
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'generar_reporte_bodega' %}" class="btn btn-warning">📦 Reporte de Bodega</a>
+        <a href="{% url 'generar_reporte_consumo' %}" class="btn btn-info">📊 Reporte de Consumo</a>
+    </div>
+
+    <!-- 📥 Botón para gestionar inventario -->
+    <div class="text-center mt-4">
+        <a href="{% url 'gestionar_inventario' %}" class="btn btn-success">📥 Agregar/Quitar Insumos</a>
+    </div>
+
+    <!-- 🔙 Botón de Volver -->
     <div class="text-center mt-4">
         <a href="{% url 'vista_empleado' %}" class="btn btn-secondary">🔙 Volver</a>
     </div>

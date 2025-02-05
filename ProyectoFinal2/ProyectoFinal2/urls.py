@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from inventario.views import vista_inventario
+from inventario.views import vista_inventario, gestionar_inventario, generar_reporte_bodega, generar_reporte_consumo
 from menus.views import ver_menu
 from mesas.views import vista_mesas
 from util import views
@@ -63,6 +63,10 @@ urlpatterns = [
     path('dashboard/', dashboard_estadisticas, name='dashboard_estadisticas'),
     path('exportar/<str:fecha_inicio>/<str:fecha_fin>/', exportar_estadisticas_pdf, name='exportar_estadisticas_pdf'),
     path("registro/", registro_cliente, name="registro_cliente"),
+
+    path('inventario/gestionar/', gestionar_inventario, name='gestionar_inventario'),
+    path('inventario/reporte-bodega/', generar_reporte_bodega, name='generar_reporte_bodega'),
+    path('inventario/reporte-consumo/', generar_reporte_consumo, name='generar_reporte_consumo'),
 ]
 
 
