@@ -4,7 +4,7 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from inventario.views import vista_inventario, gestionar_inventario, generar_reporte_bodega, generar_reporte_consumo
 from menus.views import ver_menu
-from mesas.views import vista_mesas
+from mesas.views import vista_mesas, reservar_mesa, cambiar_estado_mesa, ver_reservas, cancelar_reserva
 from util import views
 from pedidos.views import detalle_pedido, ver_pokemon_pedido, crear_pedido, lista_pedidos, editar_pedido, ver_pedidos
 from facturacion.views import (
@@ -67,6 +67,14 @@ urlpatterns = [
     path('inventario/gestionar/', gestionar_inventario, name='gestionar_inventario'),
     path('inventario/reporte-bodega/', generar_reporte_bodega, name='generar_reporte_bodega'),
     path('inventario/reporte-consumo/', generar_reporte_consumo, name='generar_reporte_consumo'),
+
+    path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
+    path('cambiar_estado/<int:mesa_id>/', cambiar_estado_mesa, name='cambiar_estado_mesa'),
+
+    path('reservas/', ver_reservas, name='ver_reservas'),  # 🔹 Ver reservas activas
+    path('cancelar_reserva/<int:reserva_id>/', cancelar_reserva, name='cancelar_reserva'),
+
+    path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
 ]
 
 

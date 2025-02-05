@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Reservar Mesa #{{ mesa.identificador }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">📅 Reservar Mesa #{{ mesa.identificador }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="fecha_reserva" class="form-label">📆 Fecha de Reserva</label>
+            <input type="date" id="fecha_reserva" name="fecha_reserva" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="hora_reserva" class="form-label">⏰ Hora de Reserva</label>
+            <input type="time" id="hora_reserva" name="hora_reserva" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">✅ Confirmar Reserva</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'vista_mesas' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+{% endblock %}

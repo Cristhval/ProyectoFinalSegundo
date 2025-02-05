@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reservas Activas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">📅 Reservas Activas</h1>
+
+    {% if reservas %}
+    <table class="table table-bordered mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Reserva ID</th>
+                <th>Mesa</th>
+                <th>Cliente</th>
+                <th>Personas</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+            <tr>
+                <td>{{ reserva.identificador }}</td>
+                <td>Mesa #{{ reserva.mesa.identificador }}</td>
+                <td>{{ reserva.cliente.nombre }}</td>
+                <td>{{ reserva.cantidad_personas }}</td>
+                <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                <td>{{ reserva.horario_inicio|time:"H:i" }}</td>
+                <td>
+                    {% if reserva.estado == "CONFIRMADA" %}
+                        <span class="badge bg-success">✅ Confirmada</span>
+                    {% elif reserva.estado == "EN_CURSO" %}
+                        <span class="badge bg-info">⌛ En Curso</span>
+                    {% elif reserva.estado == "FINALIZADA" %}
+                        <span class="badge bg-secondary">✔️ Finalizada</span>
+                    {% elif reserva.estado == "CANCELADA" %}
+                        <span class="badge bg-danger">❌ Cancelada</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if reserva.estado == "CONFIRMADA" %}
+                        <form method="POST" action="{% url 'cancelar_reserva' reserva.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">❌ Cancelar</button>
+                        </form>
+                    {% else %}
+                        <span class="text-muted">No disponible</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-center text-muted">No hay reservas activas.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'vista_cliente' %}" class="btn btn-secondary">🔙 Volver</a>
+    </div>
+</div>
+{% endblock %}
