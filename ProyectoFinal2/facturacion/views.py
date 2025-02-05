@@ -6,11 +6,9 @@ from pedidos.models import Pedido
 from .models import Promocion, ItemFactura
 from django.contrib import messages
 from facturacion.models import Factura, PagoEfectivo, PagoTarjeta, PagoTransferencia
-from util.models import Cliente
 from django.contrib.auth.decorators import login_required
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from django.http import HttpResponse, FileResponse, JsonResponse
+from django.http import HttpResponse
 import io
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer

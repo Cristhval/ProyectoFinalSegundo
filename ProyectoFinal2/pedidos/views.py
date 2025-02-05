@@ -12,9 +12,9 @@ from util.models import Cliente
 POKEMON_API_URL = "https://pokeapi.co/api/v2/pokemon/"
 
 def obtener_pokemon_aleatorio():
-    """Obtiene un Pokémon aleatorio de la API."""
+
     try:
-        pokemon_id = random.randint(1, 151)  # Solo los primeros 151 Pokémon
+        pokemon_id = random.randint(1, 151)
         response = requests.get(f"{POKEMON_API_URL}{pokemon_id}/", timeout=5)
         response.raise_for_status()
         data = response.json()
