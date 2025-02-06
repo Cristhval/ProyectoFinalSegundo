@@ -7,6 +7,56 @@
 <div class="container mt-5">
     <h1 class="text-center">📜 Historial de Facturas</h1>
 
+    <!-- Formulario de Filtro -->
+    <form method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label><strong>Fecha Inicio:</strong></label>
+                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-3">
+                <label><strong>Fecha Fin:</strong></label>
+                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-2">
+                <label><strong>Monto Mínimo:</strong></label>
+                <input type="number" name="monto_min" class="form-control" step="0.01" min="0" value="{{ monto_min }}">
+            </div>
+            <div class="col-md-2">
+                <label><strong>Monto Máximo:</strong></label>
+                <input type="number" name="monto_max" class="form-control" step="0.01" min="0" value="{{ monto_max }}">
+            </div>
+            <div class="col-md-2">
+                <label><strong>Cliente:</strong></label>
+                <select name="cliente_id" class="form-control">
+                    <option value="">Todos</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}" {% if cliente.id|stringformat:"s" == cliente_id %}selected{% endif %}>
+                            {{ cliente.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-3">
+                <label><strong>Estado:</strong></label>
+                <select name="estado" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="PENDIENTE" {% if estado == "PENDIENTE" %}selected{% endif %}>Pendiente</option>
+                    <option value="PAGADO" {% if estado == "PAGADO" %}selected{% endif %}>Pagado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary">🔍 Filtrar</button>
+            <a href="{% url 'factura_lista' %}" class="btn btn-secondary">🔄 Reset</a>
+        </div>
+    </form>
+
+    <!-- Tabla de Facturas -->
     {% if facturas %}
         <table class="table table-striped">
             <thead>
@@ -15,6 +65,7 @@
                     <th>Fecha</th>
                     <th>Total</th>
                     <th>Estado</th>
+                    <th>Cliente</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -23,8 +74,15 @@
                     <tr>
                         <td>{{ factura.numero }}</td>
                         <td>{{ factura.fecha|date:"Y-m-d" }}</td>
-                        <td>${{ factura.total }}</td>
-                        <td>{{ factura.pedido.estado }}</td>
+                        <td>${{ factura.total|floatformat:2 }}</td>
+                        <td>
+                            {% if factura.pedido.estado == "PAGADO" %}
+                                <span class="badge badge-success" style="font-size: 14px; color: white; background-color: green;">Pagado</span>
+                            {% else %}
+                                <span class="badge badge-warning" style="font-size: 14px; color: black; background-color: yellow;">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ factura.pedido.cliente.nombre }}</td>
                         <td>
                             <a href="{% url 'factura_detalle' factura.numero %}" class="btn btn-primary btn-sm">Ver</a>
                             <a href="{% url 'editar_factura' factura.numero %}" class="btn btn-warning btn-sm">Editar</a>
@@ -37,4 +95,9 @@
         <p class="text-muted text-center">No hay facturas registradas.</p>
     {% endif %}
 </div>
+
+<div class="text-center mt-3">
+    <button type="button" class="btn btn-dark" onclick="history.back()">🔙 Volver</button>
+</div>
+
 {% endblock %}

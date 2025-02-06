@@ -8,7 +8,17 @@
     <form method="post" action="{% url 'editar_factura' factura.numero %}">
         {% csrf_token %}
 
-        <h3>Promociones Aplicadas</h3>
+        <!-- Estado de la Factura -->
+        <div class="form-group">
+            <label for="estado"><strong>Estado de la Factura:</strong></label>
+            <select name="estado" id="estado" class="form-control">
+                <option value="PENDIENTE" {% if factura.pedido.estado == "PENDIENTE" %}selected{% endif %}>Pendiente</option>
+                <option value="PAGADO" {% if factura.pedido.estado == "PAGADO" %}selected{% endif %}>Pagado</option>
+            </select>
+        </div>
+
+        <!-- Promociones Aplicadas -->
+        <h3 class="mt-4">Promociones Aplicadas</h3>
         {% for promo in promociones %}
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="promociones" value="{{ promo.id }}"

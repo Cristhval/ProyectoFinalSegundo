@@ -5,6 +5,7 @@ from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 
 from pedidos.models import Pedido
+from util.models import Cliente
 from .models import Promocion, ItemFactura
 from django.contrib import messages
 from facturacion.models import Factura, PagoEfectivo, PagoTarjeta, PagoTransferencia
@@ -284,3 +285,77 @@ def obtener_detalle_pedido(request, pedido_id):
     ]
 
     return JsonResponse({"cliente": pedido.cliente.nombre, "productos": productos})
+
+
+@login_required
+def lista_facturas(request):
+    """Muestra el historial de facturas con opción de filtrar por fecha, monto, cliente y estado."""
+
+    facturas = Factura.objects.all().order_by('-fecha')
+
+    # Obtener parámetros de filtrado desde la solicitud GET
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    monto_min = request.GET.get("monto_min")
+    monto_max = request.GET.get("monto_max")
+    cliente_id = request.GET.get("cliente_id")
+    estado = request.GET.get("estado")  # Nuevo filtro por estado
+
+    # Aplicar filtros si se ingresaron valores en el formulario
+    if fecha_inicio and fecha_fin:
+        facturas = facturas.filter(fecha__range=[fecha_inicio, fecha_fin])
+
+    if monto_min:
+        facturas = facturas.filter(total__gte=float(monto_min))
+
+    if monto_max:
+        facturas = facturas.filter(total__lte=float(monto_max))
+
+    if cliente_id:
+        facturas = facturas.filter(pedido__cliente_id=cliente_id)
+
+    if estado in ["PENDIENTE", "PAGADO"]:
+        facturas = facturas.filter(pedido__estado=estado)
+
+    # Obtener lista de clientes para el filtro
+    clientes = Cliente.objects.all()
+
+    return render(request, 'facturacion/factura_lista.html', {
+        'facturas': facturas,
+        'clientes': clientes,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'monto_min': monto_min,
+        'monto_max': monto_max,
+        'cliente_id': cliente_id,
+        'estado': estado  # Pasar el estado al template
+    })
+
+def editar_factura(request, factura_numero):
+    """Permite editar el estado de una factura y modificar promociones."""
+    factura = get_object_or_404(Factura, numero=factura_numero)
+
+    if request.method == "POST":
+        # Actualizar estado de la factura
+        nuevo_estado = request.POST.get("estado")
+        if nuevo_estado in ["PENDIENTE", "PAGADO"]:
+            factura.pedido.estado = nuevo_estado
+            factura.pedido.save()
+
+        # Actualizar promociones
+        promociones_seleccionadas = request.POST.getlist("promociones")
+        factura.promociones.clear()
+        for promo_id in promociones_seleccionadas:
+            promo = get_object_or_404(Promocion, id=promo_id)
+            factura.promociones.add(promo)
+
+        factura.save()
+        messages.success(request, "✅ Factura actualizada correctamente.")
+        return redirect("factura_detalle", factura_numero=factura.numero)
+
+    promociones = Promocion.objects.filter(activa=True)
+
+    return render(request, "facturacion/editar_factura.html", {
+        "factura": factura,
+        "promociones": promociones
+    })

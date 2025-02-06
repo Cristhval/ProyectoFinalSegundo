@@ -9,7 +9,7 @@ from util import views
 from pedidos.views import detalle_pedido, ver_pokemon_pedido, crear_pedido, lista_pedidos, editar_pedido, ver_pedidos
 from facturacion.views import (
     promociones_por_clima, vista_metodos_pago, lista_facturas,
-    detalle_factura, descargar_factura_pdf, crear_factura, obtener_detalle_pedido
+    detalle_factura, descargar_factura_pdf, crear_factura, obtener_detalle_pedido, editar_factura
 )
 from estadisticas.views import dashboard_estadisticas, exportar_estadisticas_pdf
 from util.views import registro_cliente
@@ -75,6 +75,8 @@ urlpatterns = [
 
     path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
     path("facturacion/detalle_pedido/<int:pedido_id>/", obtener_detalle_pedido, name="detalle_pedido"),
+    path('facturas/', lista_facturas, name='factura_lista'),
+    path('facturas/editar/<int:factura_numero>/', editar_factura, name='editar_factura'),
 
 ]
 
