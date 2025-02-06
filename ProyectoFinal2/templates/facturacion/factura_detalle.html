@@ -5,63 +5,72 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">
-        <i class="fas fa-receipt"></i> Factura #{{ factura.numero }}
-    </h1>
+    <h1 class="text-center">📜 Factura #{{ factura.numero }}</h1>
 
     <div class="card shadow-lg">
         <div class="card-body">
-            <h5 class="mb-3"><strong>Fecha:</strong> {{ factura.fecha|date:"Y-m-d" }} {{ factura.fecha|time:"H:i" }}</h5>
-            <h5 class="mb-3"><strong>Cliente:</strong> {{ factura.pedido.cliente.nombre }}</h5>
-            <h5 class="mb-3"><strong>Total:</strong> <span class="text-success">${{ factura.total }}</span></h5>
-            <h5 class="mb-3"><strong>Impuestos incluidos:</strong> <span class="text-muted">${{ factura.impuesto_total }}</span></h5>
-            <h5><strong>Estado:</strong>
-                {% if factura.pedido.estado == "PAGADO" %}
-                    <span class="badge bg-success">Pagado</span>
-                {% else %}
-                    <span class="badge bg-warning text-dark">Pendiente</span>
+            <h5><strong>Cliente:</strong> {{ factura.pedido.cliente.nombre }}</h5>
+            <h5><strong>Fecha:</strong> {{ factura.fecha }}</h5>
+
+            <h5><strong>Método de Pago:</strong>
+                {% if factura.metodo_pago_efectivo %} Efectivo
+                {% elif factura.metodo_pago_tarjeta %} Tarjeta
+                {% elif factura.metodo_pago_transferencia %} Transferencia
+                {% else %} No registrado
                 {% endif %}
             </h5>
+
+            {% if factura.metodo_pago_efectivo %}
+                <h5><strong>Monto Pagado:</strong> ${{ factura.metodo_pago_efectivo.monto_pagado|floatformat:2 }}</h5>
+                <h5><strong>Cambio Devuelto:</strong> ${{ factura.metodo_pago_efectivo.cambio|floatformat:2 }}</h5>
+            {% endif %}
+
+            <h5><strong>Subtotal:</strong> ${{ factura.subtotal|floatformat:2 }}</h5>
+            <h5><strong>IVA (15%):</strong> ${{ factura.impuesto_total|floatformat:2 }}</h5>
+            <h5><strong>Descuento Aplicado:</strong> -${{ factura.descuento|floatformat:2 }}</h5>
+            <h4 class="text-success mt-3"><strong>Total a Pagar:</strong> ${{ factura.total|floatformat:2 }}</h4>
         </div>
     </div>
 
-    <h3 class="mt-4"><i class="fas fa-box"></i> Productos en la Factura</h3>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in factura.items.all %}
+    <div class="mt-4">
+        <h3>🛒 Detalle de Productos</h3>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in factura.items.all %}
                 <tr>
                     <td>{{ item.item_pedido.producto.nombre }}</td>
                     <td>{{ item.cantidad }}</td>
-                    <td>${{ item.item_pedido.producto.precio }}</td>
-                    <td>${{ item.subtotal }}</td>
+                    <td>${{ item.item_pedido.producto.precio|floatformat:2 }}</td>
+                    <td>${{ item.subtotal|floatformat:2 }}</td>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center text-muted">No hay productos en esta factura.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Botón para descargar en PDF -->
-    <div class="text-center mt-3">
-        <a href="{% url 'descargar_factura_pdf' factura.numero %}" class="btn btn-danger btn-lg">
-            <i class="fas fa-file-pdf"></i> Descargar Factura en PDF
-        </a>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
+    {% if factura.promociones.all %}
+    <div class="mt-4">
+        <h3>🎁 Promociones Aplicadas</h3>
+        <ul>
+            {% for promo in factura.promociones.all %}
+            <li>{{ promo.descripcion }} - Descuento: {{ promo.porcentaje_descuento }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     <div class="text-center mt-4">
-        <a href="{% url 'factura_lista' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Historial de Facturas
-        </a>
+        <a href="javascript:history.back()" class="btn btn-secondary">🔙 Volver</a>
+        <a href="{% url 'factura_lista' %}" class="btn btn-dark">📜 Ir a Historial</a>
+        <a href="{% url 'descargar_factura_pdf' factura.numero %}" class="btn btn-danger">📄 Descargar PDF</a>
     </div>
 </div>
 {% endblock %}

@@ -1,60 +1,54 @@
 /* ====== GLOBAL.CSS ====== */
+
+/* 🔹 Fuente general */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa; /* Fondo claro */
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4; /* Fondo gris claro */
 }
 
-/* ✅ Contenido con margen adecuado */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+/* 🔹 Mejor estilo para el navbar */
+.navbar {
+    background-color: #ff5722 !important; /* Naranja vibrante */
 }
 
-/* ✅ Mejor estilo para títulos */
-h1 {
-    color: #dc3378;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* ✅ Mejor estilo para botones */
+/* 🔹 Botones globales */
 .btn {
     font-size: 16px;
     padding: 10px 18px;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
-/* ✅ Corrección de navbar */
-.navbar {
-    position: sticky;
-    top: 0;
-    z-index: 1030;
+.btn:hover {
+    opacity: 0.85;
 }
 
-/* ✅ Fondo para home */
-.hero-section {
-    background: url('/static/img/fast_food_banner.png') center/cover no-repeat;
-    height: 70vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
-}
-
-/* ✅ Oscurece la imagen */
-.hero-section .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-/* ✅ Ajuste del contenido */
-.hero-section .content {
-    position: relative;
-    z-index: 2;
+/* 🔹 Estilo del footer */
+footer {
+    background-color: #007bff !important; /* 🔹 Azul igual que el navbar */
     color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+/* 🔹 Tarjetas con mejor diseño */
+.card {
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* 🔹 Estilo para títulos */
+h1, h2, h3 {
+    color: #ff5722; /* Naranja */
+    font-weight: bold;
 }

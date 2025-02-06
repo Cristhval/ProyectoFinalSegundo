@@ -155,9 +155,9 @@ class Proveedor(models.Model):
         return f"{self.nombre} - {self.telefono_contacto}"
 
 class Impuesto(models.Model):
-    nombre = models.CharField(max_length=50)  # Ejemplo: IVA, ICE
-    porcentaje = models.FloatField()  # Por ejemplo: 12.0 para el IVA
-    descripcion = models.TextField(blank=True, null=True)  # Opcional para más detalles
+    nombre = models.CharField(max_length=50)
+    porcentaje = models.FloatField()
+    descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre} - {self.porcentaje}%"

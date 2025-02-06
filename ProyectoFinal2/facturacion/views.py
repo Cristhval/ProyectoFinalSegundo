@@ -1,14 +1,17 @@
+from collections import defaultdict
+
 import requests
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 
 from pedidos.models import Pedido
+from util.models import Cliente
 from .models import Promocion, ItemFactura
 from django.contrib import messages
 from facturacion.models import Factura, PagoEfectivo, PagoTarjeta, PagoTransferencia
 from django.contrib.auth.decorators import login_required
 from reportlab.lib.pagesizes import letter
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import io
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
@@ -91,15 +94,43 @@ def lista_facturas(request):
     facturas = Factura.objects.filter(pedido__cliente=cliente).order_by('-fecha')
     return render(request, 'facturacion/factura_lista.html', {'facturas': facturas})
 
+
 @login_required
 def detalle_factura(request, factura_numero):
     factura = get_object_or_404(Factura, numero=factura_numero)
-    items = ItemFactura.objects.filter(factura=factura)  # 🔹 Obtiene los productos de la factura
+
+    # Agrupar productos para evitar duplicaciones
+    productos_agrupados = {}
+    for item in factura.items.all():
+        nombre_producto = item.item_pedido.producto.nombre
+        if nombre_producto in productos_agrupados:
+            productos_agrupados[nombre_producto]["cantidad"] += item.cantidad
+            productos_agrupados[nombre_producto]["subtotal"] += item.subtotal
+        else:
+            productos_agrupados[nombre_producto] = {
+                "cantidad": item.cantidad,
+                "precio": item.item_pedido.producto.precio,
+                "subtotal": item.subtotal
+            }
+
+    # Obtener pagos asociados
+    pagos = []
+    pagos.extend(PagoEfectivo.objects.filter(factura=factura).values("monto_pagado"))
+    pagos.extend(PagoTarjeta.objects.filter(factura=factura).values("monto_pagado"))
+    pagos.extend(PagoTransferencia.objects.filter(factura=factura).values("monto_pagado"))
+
+    # Convertir pagos en un formato adecuado para el template
+    pagos_finales = []
+    for pago in pagos:
+        metodo = "Efectivo" if "cambio" in pago else "Tarjeta" if "numero_tarjeta" in pago else "Transferencia"
+        pagos_finales.append({"metodo": metodo, "monto": pago["monto_pagado"]})
 
     return render(request, "facturacion/factura_detalle.html", {
         "factura": factura,
-        "items": items
+        "productos_agrupados": productos_agrupados,
+        "pagos": pagos_finales
     })
+
 def descargar_factura_pdf(request, factura_numero):
     factura = get_object_or_404(Factura, numero=factura_numero)
     items = factura.items.all()
@@ -172,40 +203,159 @@ def descargar_factura_pdf(request, factura_numero):
 def crear_factura(request):
     if request.method == "POST":
         pedido_id = request.POST.get("pedido_id")
-        pedido = get_object_or_404(Pedido, numero=pedido_id)  # Usar 'numero', no 'id'
+        pedido = get_object_or_404(Pedido, numero=pedido_id)
         promociones_seleccionadas = request.POST.getlist("promociones")
+        metodo_pago = request.POST.get("metodo_pago")
 
-        # 🔹 Crear y GUARDAR la factura ANTES de asignar relaciones
-        factura = Factura.objects.create(pedido=pedido)
+        # Obtener monto pagado si es efectivo
+        monto_pagado = float(request.POST.get("monto_pagado", "0") or 0)
 
-        # 🔹 Asignar ítems del pedido a la factura (NO acceder a relaciones antes de guardar)
-        for item_pedido in pedido.items.all():
-            ItemFactura.objects.create(
-                factura=factura,
-                item_pedido=item_pedido,
-                cantidad=item_pedido.cantidad
-            )
+        # Calcular el subtotal antes de aplicar impuestos y descuentos
+        subtotal_sin_descuento = sum(item.cantidad * item.producto.precio for item in pedido.items.all())
 
-        # 🔹 Guardar la factura para asegurarnos de que tiene una clave primaria asignada
-        factura.save()
+        # Calcular descuentos
+        descuento_total = 0.0
+        for promo in Promocion.objects.filter(id__in=promociones_seleccionadas):
+            descuento_total += subtotal_sin_descuento * (promo.porcentaje_descuento / 100)
 
-        # 🔹 Asignar promociones a la factura (Después de guardar)
+        # Aplicar descuento antes de calcular el IVA
+        subtotal_con_descuento = subtotal_sin_descuento - descuento_total
+
+        # Calcular impuestos (IVA del 15%)
+        IVA = 0.15
+        impuesto_total = round(subtotal_con_descuento * IVA, 2)
+
+        # Calcular total final
+        total_a_pagar = round(subtotal_con_descuento + impuesto_total, 2)
+
+        # Crear factura y guardar valores correctos
+        factura = Factura.objects.create(
+            pedido=pedido,
+            subtotal=round(subtotal_sin_descuento, 2),
+            descuento=round(descuento_total, 2),
+            impuesto_total=impuesto_total,
+            total=total_a_pagar
+        )
+
+        # Agregar promociones a la factura
         for promo_id in promociones_seleccionadas:
             promo = get_object_or_404(Promocion, id=promo_id)
             factura.promociones.add(promo)
 
-        # 🔹 Calcular montos finales
-        factura.calcular_monto_total()
-        factura.save()
+        # Manejar métodos de pago
+        cambio = max(monto_pagado - total_a_pagar, 0)
+        if metodo_pago == "efectivo":
+            factura.metodo_pago_efectivo = PagoEfectivo.objects.create(
+                monto_pagado=monto_pagado, cuenta_por_cobrar=0, cambio=cambio
+            )
+        elif metodo_pago == "tarjeta":
+            factura.metodo_pago_tarjeta = PagoTarjeta.objects.create(
+                monto_pagado=total_a_pagar, cuenta_por_cobrar=0, numero_tarjeta="XXXX-XXXX-XXXX-0000",
+                titular="Cliente", vencimiento="2025-12-31"
+            )
+        elif metodo_pago == "transferencia":
+            factura.metodo_pago_transferencia = PagoTransferencia.objects.create(
+                monto_pagado=total_a_pagar, cuenta_por_cobrar=0, numero_transferencia="123456", banco_origen="Banco XYZ"
+            )
 
-        messages.success(request, "Factura creada exitosamente.")
+        factura.save()
+        messages.success(request, "✅ Factura creada exitosamente.")
         return redirect("factura_detalle", factura_numero=factura.numero)
 
-    # 🔹 Obtener los pedidos pendientes y promociones activas
     pedidos = Pedido.objects.filter(estado="PENDIENTE")
     promociones = Promocion.objects.filter(activa=True)
 
     return render(request, "facturacion/crear_factura.html", {
         "pedidos": pedidos,
+        "promociones": promociones
+    })
+
+def obtener_detalle_pedido(request, pedido_id):
+    """ Devuelve los productos de un pedido en JSON """
+    pedido = get_object_or_404(Pedido, numero=pedido_id)
+
+    productos = [
+        {
+            "nombre": item.producto.nombre,
+            "precio": float(item.producto.precio),
+            "cantidad": item.cantidad,
+            "subtotal": round(item.producto.precio * item.cantidad, 2)
+        }
+        for item in pedido.items.all()
+    ]
+
+    return JsonResponse({"cliente": pedido.cliente.nombre, "productos": productos})
+
+
+@login_required
+def lista_facturas(request):
+    """Muestra el historial de facturas con opción de filtrar por fecha, monto, cliente y estado."""
+
+    facturas = Factura.objects.all().order_by('-fecha')
+
+    # Obtener parámetros de filtrado desde la solicitud GET
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    monto_min = request.GET.get("monto_min")
+    monto_max = request.GET.get("monto_max")
+    cliente_id = request.GET.get("cliente_id")
+    estado = request.GET.get("estado")  # Nuevo filtro por estado
+
+    # Aplicar filtros si se ingresaron valores en el formulario
+    if fecha_inicio and fecha_fin:
+        facturas = facturas.filter(fecha__range=[fecha_inicio, fecha_fin])
+
+    if monto_min:
+        facturas = facturas.filter(total__gte=float(monto_min))
+
+    if monto_max:
+        facturas = facturas.filter(total__lte=float(monto_max))
+
+    if cliente_id:
+        facturas = facturas.filter(pedido__cliente_id=cliente_id)
+
+    if estado in ["PENDIENTE", "PAGADO"]:
+        facturas = facturas.filter(pedido__estado=estado)
+
+    # Obtener lista de clientes para el filtro
+    clientes = Cliente.objects.all()
+
+    return render(request, 'facturacion/factura_lista.html', {
+        'facturas': facturas,
+        'clientes': clientes,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'monto_min': monto_min,
+        'monto_max': monto_max,
+        'cliente_id': cliente_id,
+        'estado': estado  # Pasar el estado al template
+    })
+
+def editar_factura(request, factura_numero):
+    """Permite editar el estado de una factura y modificar promociones."""
+    factura = get_object_or_404(Factura, numero=factura_numero)
+
+    if request.method == "POST":
+        # Actualizar estado de la factura
+        nuevo_estado = request.POST.get("estado")
+        if nuevo_estado in ["PENDIENTE", "PAGADO"]:
+            factura.pedido.estado = nuevo_estado
+            factura.pedido.save()
+
+        # Actualizar promociones
+        promociones_seleccionadas = request.POST.getlist("promociones")
+        factura.promociones.clear()
+        for promo_id in promociones_seleccionadas:
+            promo = get_object_or_404(Promocion, id=promo_id)
+            factura.promociones.add(promo)
+
+        factura.save()
+        messages.success(request, "✅ Factura actualizada correctamente.")
+        return redirect("factura_detalle", factura_numero=factura.numero)
+
+    promociones = Promocion.objects.filter(activa=True)
+
+    return render(request, "facturacion/editar_factura.html", {
+        "factura": factura,
         "promociones": promociones
     })

@@ -47,7 +47,7 @@
                                 <ul class="dropdown-menu">
                                     {% for factura in facturas %}
                                         <li>
-                                            <a class="dropdown-item" href="{% url 'vista_metodos_pago' factura.numero %}">
+                                            <a class="dropdown-item" href="{% url 'factura_detalle' factura.numero %}">
                                                 Factura #{{ factura.numero }} - ${{ factura.total }}
                                             </a>
                                         </li>
@@ -62,6 +62,47 @@
             </div>
         </div>
 
+        <!-- 📌 Nueva fila con la vista de Menús -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📜 Menú</h5>
+                        <p class="card-text">Explora nuestros platillos y bebidas disponibles.</p>
+                        <a href="{% url 'ver_menu' %}" class="btn btn-info">Ver Menú</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📌 Nueva fila con las vistas de Mesas y Reservas -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">🪑 Estado de las Mesas</h5>
+                        <p class="card-text">Consulta las mesas disponibles y realiza reservas.</p>
+                        <a href="{% url 'vista_mesas' %}" class="btn btn-info">Ver Mesas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📅 Mis Reservas</h5>
+                        <p class="card-text">Consulta y cancela tus reservas activas.</p>
+                        <a href="{% url 'ver_reservas' %}" class="btn btn-secondary">Ver Reservas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔹 Botón para regresar a la vista anterior -->
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-dark" onclick="history.back()">🔙 Volver</button>
+        </div>
+
+        <!-- 🔹 Botón de Cerrar Sesión -->
         <form action="{% url 'logout' %}" method="post" class="mt-5">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger btn-lg">Cerrar sesión</button>

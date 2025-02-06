@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de Consumo{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">📊 Reporte de Consumo</h1>
+
+    <!-- 📅 Filtro por Fechas -->
+    <form method="GET" action="{% url 'generar_reporte_consumo' %}" class="mb-4">
+        <div class="row">
+            <div class="col-md-5">
+                <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+            </div>
+            <div class="col-md-5">
+                <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-info w-100">🔍 Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-bordered mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Insumo</th>
+                <th>Total Retirado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reporte in reportes %}
+            <tr>
+                <td>{{ reporte.insumo__nombre }}</td>
+                <td>{{ reporte.total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" class="text-center text-muted">No hay datos disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 📊 Total General de Insumos Retirados -->
+    <h3 class="mt-4 text-center"><strong>🔢 Total de Insumos Retirados: {{ total_retirado }}</strong></h3>
+
+    <!-- 🔙 Botón de Regresar -->
+    <div class="text-center mt-4">
+        <a href="{% url 'vista_inventario' %}" class="btn btn-secondary">🔙 Volver al Inventario</a>
+    </div>
+</div>
+{% endblock %}

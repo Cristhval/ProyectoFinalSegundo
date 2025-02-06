@@ -68,7 +68,7 @@
         <!-- 📌 Funciones del mesero -->
         {% if user.es_mesero %}
         <div class="row mt-4">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">🛎 Tomar Pedido</h5>
@@ -77,12 +77,21 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card shadow">
                     <div class="card-body">
                         <h5 class="card-title">🧾 Crear Factura</h5>
                         <p class="card-text">Genera una factura para un pedido.</p>
                         <a href="{% url 'crear_factura' %}" class="btn btn-danger">Nueva Factura</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📜 Historial de Facturas</h5>
+                        <p class="card-text">Consulta todas las facturas generadas.</p>
+                        <a href="{% url 'factura_lista' %}" class="btn btn-dark">Ver Historial</a>
                     </div>
                 </div>
             </div>

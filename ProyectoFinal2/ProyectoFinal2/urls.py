@@ -2,14 +2,14 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from inventario.views import vista_inventario
+from inventario.views import vista_inventario, gestionar_inventario, generar_reporte_bodega, generar_reporte_consumo
 from menus.views import ver_menu
-from mesas.views import vista_mesas
+from mesas.views import vista_mesas, reservar_mesa, cambiar_estado_mesa, ver_reservas, cancelar_reserva
 from util import views
 from pedidos.views import detalle_pedido, ver_pokemon_pedido, crear_pedido, lista_pedidos, editar_pedido, ver_pedidos
 from facturacion.views import (
     promociones_por_clima, vista_metodos_pago, lista_facturas,
-    detalle_factura, descargar_factura_pdf, crear_factura
+    detalle_factura, descargar_factura_pdf, crear_factura, obtener_detalle_pedido, editar_factura
 )
 from estadisticas.views import dashboard_estadisticas, exportar_estadisticas_pdf
 from util.views import registro_cliente
@@ -27,7 +27,6 @@ urlpatterns = [
     # 📌 Vistas del cliente
     path('cliente/', views.vista_cliente, name='vista_cliente'),
     path('cliente/pedidos/', views.vista_pedidos_cliente, name='vista_pedidos_cliente'),
-    path('cliente/metodos-pago/<int:factura_numero>/', vista_metodos_pago, name='vista_metodos_pago'),
 
     # 📌 Detalles de pedidos
     path('detalle/<int:pedido_numero>/', detalle_pedido, name='detalle_pedido'),
@@ -63,6 +62,22 @@ urlpatterns = [
     path('dashboard/', dashboard_estadisticas, name='dashboard_estadisticas'),
     path('exportar/<str:fecha_inicio>/<str:fecha_fin>/', exportar_estadisticas_pdf, name='exportar_estadisticas_pdf'),
     path("registro/", registro_cliente, name="registro_cliente"),
+
+    path('inventario/gestionar/', gestionar_inventario, name='gestionar_inventario'),
+    path('inventario/reporte-bodega/', generar_reporte_bodega, name='generar_reporte_bodega'),
+    path('inventario/reporte-consumo/', generar_reporte_consumo, name='generar_reporte_consumo'),
+
+    path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
+    path('cambiar_estado/<int:mesa_id>/', cambiar_estado_mesa, name='cambiar_estado_mesa'),
+
+    path('reservas/', ver_reservas, name='ver_reservas'),  # 🔹 Ver reservas activas
+    path('cancelar_reserva/<int:reserva_id>/', cancelar_reserva, name='cancelar_reserva'),
+
+    path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
+    path("facturacion/detalle_pedido/<int:pedido_id>/", obtener_detalle_pedido, name="detalle_pedido"),
+    path('facturas/', lista_facturas, name='factura_lista'),
+    path('facturas/editar/<int:factura_numero>/', editar_factura, name='editar_factura'),
+
 ]
 
 
