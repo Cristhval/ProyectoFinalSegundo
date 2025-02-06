@@ -62,6 +62,19 @@
             </div>
         </div>
 
+        <!-- 📌 Nueva fila con la vista de Menús -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">📜 Menú</h5>
+                        <p class="card-text">Explora nuestros platillos y bebidas disponibles.</p>
+                        <a href="{% url 'ver_menu' %}" class="btn btn-info">Ver Menú</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 📌 Nueva fila con las vistas de Mesas y Reservas -->
         <div class="row mt-4">
             <div class="col-md-6">
@@ -84,6 +97,12 @@
             </div>
         </div>
 
+        <!-- 🔹 Botón para regresar a la vista anterior -->
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-dark" onclick="history.back()">🔙 Volver</button>
+        </div>
+
+        <!-- 🔹 Botón de Cerrar Sesión -->
         <form action="{% url 'logout' %}" method="post" class="mt-5">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger btn-lg">Cerrar sesión</button>

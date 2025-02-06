@@ -30,8 +30,9 @@
         {% endfor %}
     </div>
 
+    <!-- 📌 Botón Volver con JavaScript para regresar a la página anterior -->
     <div class="text-center mt-4">
-        <a href="{% url 'vista_empleado' %}" class="btn btn-secondary">🔙 Volver</a>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">🔙 Volver</button>
     </div>
 </div>
 {% endblock %}
