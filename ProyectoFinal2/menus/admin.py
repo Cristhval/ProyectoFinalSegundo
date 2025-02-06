@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Menu, Categoria, Producto
-from util.models import Impuesto  # ✅ Importar Impuesto
+from util.models import Impuesto
 
 # --- CONFIGURACIÓN PARA MENU ---
 @admin.register(Menu)
