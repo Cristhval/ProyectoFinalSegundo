@@ -1,39 +1,57 @@
-/* Estilo general */
+/* 🔹 Sección Hero - Imagen de Fondo sin Espacios Blancos */
 .hero-section {
-    background: url('/static/img/fast_food_banner.png') center/cover no-repeat;
-    height: 80vh;
-    position: relative;
+    background-image: url("/static/img/fast_food_banner.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh; /* 🔹 Asegura que cubra toda la pantalla */
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 20px;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
-/* Oscurece la imagen de fondo */
+/* 🔹 Evita márgenes en el contenido */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden; /* 🔹 Evita barras de desplazamiento */
+}
+
+/* 🔹 Ajusta la superposición para oscurecer la imagen */
 .hero-section .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
 }
 
-/* Ajusta el contenido */
+/* 🔹 Ajusta el contenido del banner */
 .hero-section .content {
     position: relative;
     z-index: 2;
     color: white;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
 }
 
-/* Botones llamativos */
-.user-options a {
-    margin: 10px;
-    font-size: 1.2rem;
-}
-
-.btn-lg {
-    padding: 12px 24px;
-    font-size: 1.2rem;
+/* 🔹 Estilo del footer para que no genere margen superior */
+footer {
+    background-color: #007bff !important;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }

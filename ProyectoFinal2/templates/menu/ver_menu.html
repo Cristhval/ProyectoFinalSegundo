@@ -1,21 +1,39 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Menú{% endblock %}
+{% block title %}Menú del Restaurante{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">📜 Menú del Restaurante</h1>
 
-    <div class="row justify-content-center">
+    <!-- Filtro por Categoría -->
+    <div class="text-center mb-4">
+        <label for="categoriaFiltro"><strong>Filtrar por categoría:</strong></label>
+        <select id="categoriaFiltro" class="form-select w-auto d-inline-block" onchange="filtrarCategoria()">
+            <option value="Todas">Todas</option>
+            {% for categoria in categorias %}
+                <option value="{{ categoria.nombre }}">{{ categoria.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Contenedor de Productos -->
+    <div class="row justify-content-center" id="productosContainer">
         {% for producto in productos %}
-        <div class="col-md-4">
+        <div class="col-md-4 producto-card" data-categoria="{{ producto.categoria.nombre }}">
             <div class="card shadow-lg mb-3">
+                <!-- Imagen del Producto -->
+                <img src="{% static 'img/menu/' %}{{ producto.nombre|slugify }}.jpg"
+                     class="card-img-top img-fluid"
+                     onerror="this.onerror=null; this.src='{% static 'img/menu/default.jpg' %}';"
+                     alt="{{ producto.nombre }}">
+
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ producto.nombre }}</h5>
-                    <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
-                    <p class="card-text"><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
-                    <p class="card-text"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+                    <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    <p><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
+                    <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
 
                     {% if producto.disponibilidad %}
                         <p class="text-success"><i class="fas fa-check-circle"></i> Disponible</p>
@@ -30,9 +48,26 @@
         {% endfor %}
     </div>
 
-    <!-- 📌 Botón Volver con JavaScript para regresar a la página anterior -->
+    <!-- Botón Volver -->
     <div class="text-center mt-4">
         <button type="button" class="btn btn-secondary" onclick="history.back()">🔙 Volver</button>
     </div>
 </div>
+
+<!-- Filtro de Categoría -->
+<script>
+    function filtrarCategoria() {
+        let filtro = document.getElementById("categoriaFiltro").value;
+        let productos = document.querySelectorAll(".producto-card");
+
+        productos.forEach(producto => {
+            let categoria = producto.getAttribute("data-categoria");
+            if (filtro === "Todas" || categoria === filtro) {
+                producto.style.display = "block";
+            } else {
+                producto.style.display = "none";
+            }
+        });
+    }
+</script>
 {% endblock %}

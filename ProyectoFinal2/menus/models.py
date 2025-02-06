@@ -36,6 +36,7 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos')
     impuestos = models.ManyToManyField(Impuesto, blank=True)
 
+
     def precio_con_impuestos(self):
         total_impuesto = sum(imp.porcentaje for imp in self.impuestos.all())
         return round(self.precio * (1 + total_impuesto / 100), 2)
