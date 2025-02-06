@@ -9,7 +9,7 @@ from util import views
 from pedidos.views import detalle_pedido, ver_pokemon_pedido, crear_pedido, lista_pedidos, editar_pedido, ver_pedidos
 from facturacion.views import (
     promociones_por_clima, vista_metodos_pago, lista_facturas,
-    detalle_factura, descargar_factura_pdf, crear_factura
+    detalle_factura, descargar_factura_pdf, crear_factura, obtener_detalle_pedido
 )
 from estadisticas.views import dashboard_estadisticas, exportar_estadisticas_pdf
 from util.views import registro_cliente
@@ -27,7 +27,6 @@ urlpatterns = [
     # 📌 Vistas del cliente
     path('cliente/', views.vista_cliente, name='vista_cliente'),
     path('cliente/pedidos/', views.vista_pedidos_cliente, name='vista_pedidos_cliente'),
-    path('cliente/metodos-pago/<int:factura_numero>/', vista_metodos_pago, name='vista_metodos_pago'),
 
     # 📌 Detalles de pedidos
     path('detalle/<int:pedido_numero>/', detalle_pedido, name='detalle_pedido'),
@@ -75,6 +74,8 @@ urlpatterns = [
     path('cancelar_reserva/<int:reserva_id>/', cancelar_reserva, name='cancelar_reserva'),
 
     path('reservar/<int:mesa_id>/', reservar_mesa, name='reservar_mesa'),
+    path("facturacion/detalle_pedido/<int:pedido_id>/", obtener_detalle_pedido, name="detalle_pedido"),
+
 ]
 
 

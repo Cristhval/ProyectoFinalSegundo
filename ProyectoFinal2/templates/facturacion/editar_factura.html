@@ -5,32 +5,19 @@
 <div class="container mt-5">
     <h1 class="text-center">📝 Editar Factura #{{ factura.numero }}</h1>
 
-    {% if error %}
-        <div class="alert alert-danger text-center">{{ error }}</div>
-    {% endif %}
-
     <form method="post" action="{% url 'editar_factura' factura.numero %}">
         {% csrf_token %}
 
-        <!-- Seleccionar Promociones -->
-        <div class="form-group mt-3">
-            <label><strong>Seleccionar Promociones:</strong> (Opcional)</label>
-            <div class="row">
-                {% for promo in promociones %}
-                <div class="col-md-6">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="promociones" value="{{ promo.id }}"
-                               id="promo_{{ promo.id }}" {% if promo in factura.promociones.all %}checked{% endif %}>
-                        <label class="form-check-label" for="promo_{{ promo.id }}">
-                            {{ promo.descripcion }} - Descuento: {{ promo.porcentaje_descuento }}%
-                        </label>
-                    </div>
-                </div>
-                {% empty %}
-                <p class="text-muted">No hay promociones disponibles.</p>
-                {% endfor %}
+        <h3>Promociones Aplicadas</h3>
+        {% for promo in promociones %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="promociones" value="{{ promo.id }}"
+                    {% if promo in factura.promociones.all %}checked{% endif %}>
+                <label class="form-check-label">{{ promo.descripcion }} - Descuento: {{ promo.porcentaje_descuento }}%</label>
             </div>
-        </div>
+        {% empty %}
+            <p class="text-muted">No hay promociones disponibles.</p>
+        {% endfor %}
 
         <button type="submit" class="btn btn-primary mt-3">💾 Guardar Cambios</button>
     </form>

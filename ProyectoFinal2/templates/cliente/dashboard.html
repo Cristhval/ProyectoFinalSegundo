@@ -47,7 +47,7 @@
                                 <ul class="dropdown-menu">
                                     {% for factura in facturas %}
                                         <li>
-                                            <a class="dropdown-item" href="{% url 'vista_metodos_pago' factura.numero %}">
+                                            <a class="dropdown-item" href="{% url 'factura_detalle' factura.numero %}">
                                                 Factura #{{ factura.numero }} - ${{ factura.total }}
                                             </a>
                                         </li>
